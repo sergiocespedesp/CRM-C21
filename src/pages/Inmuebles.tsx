@@ -92,7 +92,7 @@ const Inmuebles: React.FC = () => {
             const MAX_IMAGES = 5;
 
             if (currentImagesCount + files.length > MAX_IMAGES) {
-                alert(`Solo puedes subir un m¡ximo de ${MAX_IMAGES} im¡genes.`);
+                alert(`Solo puedes subir un máximo de ${MAX_IMAGES} imágenes.`);
                 return;
             }
 
@@ -155,7 +155,7 @@ const Inmuebles: React.FC = () => {
             toast.success(editingProperty ? 'Inmueble actualizado exitosamente' : 'Inmueble creado exitosamente');
             setIsPropertyModalOpen(false);
         } catch (error) {
-            console.error('Error saving property:', error); alert('Error al guardar: Es posible que las im¡genes sean muy pesadas o el almacenamiento estÃ lleno.');
+            console.error('Error saving property:', error); alert('Error al guardar: Es posible que las imágenes sean muy pesadas o el almacenamiento estÃ lleno.');
         }
     };
 
@@ -219,7 +219,7 @@ const Inmuebles: React.FC = () => {
             case 'SALE': return 'Venta';
             case 'PRE_SALE': return 'Preventa';
             case 'RENT': return 'Alquiler';
-            case 'ANTICRETIC': return 'AnticrÃ©tico';
+            case 'ANTICRETIC': return 'Anticrético';
             default: return type;
         }
     };
@@ -444,7 +444,7 @@ const Inmuebles: React.FC = () => {
                                             <h4 className="font-bold border-b border-[var(--border-light)] pb-2">UbicaciÃ³n</h4>
                                             <div className="text-sm space-y-2">
                                                 <p><span className="font-semibold">Zona:</span> {selectedProperty.zone || '-'}</p>
-                                                <p><span className="font-semibold">DirecciÃ³n:</span> {selectedProperty.address}</p>
+                                                <p><span className="font-semibold">Dirección:</span> {selectedProperty.address}</p>
                                                 {selectedProperty.mapUrl && (
                                                     <a href={selectedProperty.mapUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--color-secondary)] hover:underline flex items-center gap-1 mt-2">
                                                         <MapPin size={14} /> Ver en Mapa
@@ -610,7 +610,7 @@ const Inmuebles: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold text-[var(--text-main)] mb-1 uppercase">TransacciÃ³n *</label>
+                            <label className="block text-xs font-bold text-[var(--text-main)] mb-1 uppercase">transacción *</label>
                             <select
                                 value={propertyForm.transaction}
                                 onChange={e => setPropertyForm({ ...propertyForm, transaction: e.target.value as TransactionType })}
@@ -619,7 +619,7 @@ const Inmuebles: React.FC = () => {
                                 <option value="SALE">Venta</option>
                                 <option value="PRE_SALE">Preventa</option>
                                 <option value="RENT">Alquiler</option>
-                                <option value="ANTICRETIC">AnticrÃ©tico</option>
+                                <option value="ANTICRETIC">Anticrético</option>
                             </select>
                         </div>
 
@@ -666,7 +666,7 @@ const Inmuebles: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold text-[var(--text-main)] mb-1 uppercase">DirecciÃ³n</label>
+                            <label className="block text-xs font-bold text-[var(--text-main)] mb-1 uppercase">Dirección</label>
                             <input
                                 type="text"
                                 value={propertyForm.address || ''}
@@ -724,7 +724,7 @@ const Inmuebles: React.FC = () => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-[var(--text-main)] mb-1 uppercase">BaÃ±os</label>
+                                    <label className="block text-xs font-bold text-[var(--text-main)] mb-1 uppercase">Baños</label>
                                     <input
                                         type="number"
                                         value={propertyForm.bathrooms || ''}
@@ -884,7 +884,7 @@ const Inmuebles: React.FC = () => {
                                 value={propertyForm.amenities?.join(', ') || ''}
                                 onChange={e => setPropertyForm({ ...propertyForm, amenities: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
                                 className="w-full"
-                                placeholder="Piscina, Gimnasio, Ãrea de juegos, SalÃ³n de eventos"
+                                placeholder="Piscina, Gimnasio, Ãrea de juegos, Salón de eventos"
                             />
                             <span className="text-xs text-[var(--text-muted)]">Separar con comas</span>
                         </div>
@@ -892,12 +892,12 @@ const Inmuebles: React.FC = () => {
 
 
                         <div className="col-span-2">
-                            <label className="block text-xs font-bold text-[var(--text-main)] mb-1 uppercase">Im¡genes</label>
+                            <label className="block text-xs font-bold text-[var(--text-main)] mb-1 uppercase">imágenes</label>
                             <div className="space-y-3">
                                 <div className="flex items-center gap-2">
                                     <label className="btn btn-outline btn-sm gap-2 cursor-pointer">
                                         <Upload size={16} />
-                                        Subir Im¡genes
+                                        Subir imágenes
                                         <input
                                             type="file"
                                             multiple
@@ -907,7 +907,7 @@ const Inmuebles: React.FC = () => {
                                         />
                                     </label>
                                     <span className="text-xs text-[var(--text-muted)]">
-                                        {propertyForm.images?.length || 0} im¡genes seleccionadas
+                                        {propertyForm.images?.length || 0} imágenes seleccionadas
                                     </span>
                                 </div>
 
@@ -959,7 +959,7 @@ const Inmuebles: React.FC = () => {
                 <form onSubmit={handleSaveUnit} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-bold text-[var(--text-main)] mb-1 uppercase">Nombre / NÂ° Unidad</label>
+                            <label className="block text-xs font-bold text-[var(--text-main)] mb-1 uppercase">Nombre / N° Unidad</label>
                             <input
                                 type="text"
                                 required
@@ -1017,7 +1017,7 @@ const Inmuebles: React.FC = () => {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-[var(--text-main)] mb-1 uppercase">BaÃ±os</label>
+                            <label className="block text-xs font-bold text-[var(--text-main)] mb-1 uppercase">Baños</label>
                             <input
                                 type="number"
                                 value={unitForm.bathrooms || ''}
@@ -1081,7 +1081,7 @@ const Inmuebles: React.FC = () => {
             <Modal
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
-                title="Confirmar EliminaciÃ³n"
+                title="Confirmar Eliminación"
                 size="sm"
             >
                 <div className="space-y-4 text-center">
@@ -1089,9 +1089,9 @@ const Inmuebles: React.FC = () => {
                         <AlertTriangle size={24} />
                     </div>
                     <div>
-                        <h4 className="font-bold text-lg">Â¿EstÃ¡s seguro?</h4>
+                        <h4 className="font-bold text-lg">¿Estás seguro?</h4>
                         <p className="text-sm text-[var(--text-muted)] mt-1">
-                            EstÃ¡s a punto de eliminar el inmueble "{propertyToDelete?.name}". Esta acciÃ³n no se puede deshacer.
+                            Estás a punto de eliminar el inmueble "{propertyToDelete?.name}". Esta acciÃ³n no se puede deshacer.
                         </p>
                     </div>
                     <div className="flex gap-3 justify-center pt-2">
@@ -1105,7 +1105,7 @@ const Inmuebles: React.FC = () => {
                             onClick={confirmDelete}
                             className="btn bg-red-500 hover:bg-red-600 text-white border-none"
                         >
-                            SÃ­, Eliminar
+                            Sí­, Eliminar
                         </button>
                     </div>
                 </div>

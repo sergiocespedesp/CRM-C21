@@ -468,7 +468,7 @@ const Dashboard: React.FC = () => {
           </div>
         </>
       ) : (
-        <AnalyticsDashboard data={analytics} />
+        <AnalyticsDashboard {...analytics} />
       )}
     </div>
   );

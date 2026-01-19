@@ -96,7 +96,7 @@ const LeadDetail: React.FC = () => {
             
         } catch (error) {
             console.error('Error adding interaction:', error);
-            alert('Error al agregar la interacci?n');
+            alert('Error al agregar la Interacción');
         }
     };
 
@@ -132,7 +132,7 @@ const LeadDetail: React.FC = () => {
             
         } catch (error) {
             console.error('Error adding interest:', error);
-            alert('Error al agregar el inter?s');
+            alert('Error al agregar el Interés');
         }
     };
 
@@ -151,9 +151,9 @@ const LeadDetail: React.FC = () => {
             INFO_SENT: 'Info Enviada',
             CONTACTED: 'Contactado',
             QUALIFIED: 'Calificado',
-            PRESENTATION: 'Presentaci?n',
+            PRESENTATION: 'Presentación',
             VISIT: 'Visita',
-            NEGOTIATION: 'Negociaci?n',
+            NEGOTIATION: 'Negociación',
             CLOSED_WON: 'Cerrado Ganado',
             DISCARDED: 'Descartado'
         };
@@ -270,14 +270,14 @@ const LeadDetail: React.FC = () => {
                                 <div className="flex flex-col gap-2">
                                     {isEditing ? (
                                         <select value={editForm.temperature || 'WARM'} onChange={(e) => setEditForm({ ...editForm, temperature: e.target.value as LeadTemperature })} className="px-3 py-1 border rounded">
-                                            <option value="COLD">Fr?o</option>
+                                            <option value="COLD">Frío</option>
                                             <option value="WARM">Tibio</option>
                                             <option value="HOT">Caliente</option>
                                         </select>
                                     ) : (
                                         <span className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 ${getTemperatureColor(lead.temperature)}`}>
                                             <Thermometer className="w-4 h-4" />
-                                            {lead.temperature === 'HOT' ? 'Caliente' : lead.temperature === 'WARM' ? 'Tibio' : 'Fr?o'}
+                                            {lead.temperature === 'HOT' ? 'Caliente' : lead.temperature === 'WARM' ? 'Tibio' : 'Frío'}
                                         </span>
                                     )}
                                 </div>
@@ -330,9 +330,9 @@ const LeadDetail: React.FC = () => {
                                         <option value="INFO_SENT">Info Enviada</option>
                                         <option value="CONTACTED">Contactado</option>
                                         <option value="QUALIFIED">Calificado</option>
-                                        <option value="PRESENTATION">Presentaci?n</option>
+                                        <option value="PRESENTATION">Presentación</option>
                                         <option value="VISIT">Visita</option>
-                                        <option value="NEGOTIATION">Negociaci?n</option>
+                                        <option value="NEGOTIATION">Negociación</option>
                                         <option value="CLOSED_WON">Cerrado Ganado</option>
                                         <option value="DISCARDED">Descartado</option>
                                     </select>
@@ -347,15 +347,15 @@ const LeadDetail: React.FC = () => {
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                                     <Building2 className="w-5 h-5" />
-                                    Propiedades de Inter?s
+                                    Propiedades de Interés
                                 </h2>
                                 <button onClick={() => setShowInterestModal(true)} className="flex items-center gap-2 px-3 py-2 bg-[#BEAF87] text-white rounded-lg hover:bg-[#A89770] text-sm">
                                     <Plus className="w-4 h-4" />
-                                    Agregar Inter?s
+                                    Agregar Interés
                                 </button>
                             </div>
                             {leadProperties.length === 0 ? (
-                                <p className="text-gray-500 text-center py-8">No hay propiedades de inter?s registradÃ­as</p>
+                                <p className="text-gray-500 text-center py-8">No hay propiedades de Interés registradÃ­as</p>
                             ) : (
                                 <div className="space-y-3">
                                     {leadProperties.map(property => (
@@ -394,7 +394,7 @@ const LeadDetail: React.FC = () => {
                                             <option value="CALL">Llamada</option>
                                             <option value="WHATSAPP">WhatsApp</option>
                                             <option value="EMAIL">Email</option>
-                                            <option value="MEETING">Reuni?n</option>
+                                            <option value="MEETING">Reunión</option>
                                             <option value="VISIT">Visita</option>
                                             <option value="MESSENGER">Messenger</option>
                                         </select>
@@ -409,7 +409,7 @@ const LeadDetail: React.FC = () => {
                                                     }
                                                 }}
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#BEAF87] focus:border-transparent text-sm"
-                                                placeholder="Escribe la acci?n realizada y presiona Enter..."
+                                                placeholder="Escribe la Acción realizada y presiona Enter..."
                                             />
                                         </div>
                                     </div>
@@ -418,7 +418,7 @@ const LeadDetail: React.FC = () => {
                                         disabled={!newInteraction.content.trim()}
                                         className="w-full px-4 py-2 bg-[#BEAF87] text-white rounded-lg hover:bg-[#A89770] disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold transition-all"
                                     >
-                                        Guardar Acci?n
+                                        Guardar Acción
                                     </button>
                                 </div>
                             </div>
@@ -438,7 +438,7 @@ const LeadDetail: React.FC = () => {
 													<div className="flex items-start justify-between mb-2">
 														<div>
 															<span className="font-semibold text-gray-900">
-																{interaction.type === 'CALL' ? 'Llamada' : interaction.type === 'WHATSAPP' ? 'WhatsApp' : interaction.type === 'EMAIL' ? 'Email' : interaction.type === 'MEETING' ? 'Reuni?n' : interaction.type === 'VISIT' ? 'Visita' : interaction.type === 'NEXT_ACTION' ? 'Pr?xima Acci?n' : 'Nota'}
+																{interaction.type === 'CALL' ? 'Llamada' : interaction.type === 'WHATSAPP' ? 'WhatsApp' : interaction.type === 'EMAIL' ? 'Email' : interaction.type === 'MEETING' ? 'Reunión' : interaction.type === 'VISIT' ? 'Visita' : interaction.type === 'NEXT_ACTION' ? 'Próxima Acción' : 'Nota'}
 															</span>
 															<span className="text-gray-500 text-sm ml-2">
 																 {interaction.origin === 'MANUAL' ? 'Manual' : interaction.origin === 'META_ADS' ? 'Meta Ads' : interaction.origin === 'WHATSAPP_API' ? 'WhatsApp API' : interaction.origin}
@@ -461,12 +461,12 @@ const LeadDetail: React.FC = () => {
 																)}
 																{interaction.visitChecklist.clientInterest && (
 																	<div>
-																		<span className="font-medium text-gray-700">Nivel de Inter?s:</span>
+																		<span className="font-medium text-gray-700">Nivel de Interés:</span>
 																		<p className="text-gray-900">
-																			{interaction.visitChecklist.clientInterest === 'high' && '?? Alto'}
-																			{interaction.visitChecklist.clientInterest === 'medium' && '? Medio'}
-																			{interaction.visitChecklist.clientInterest === 'low' && '?? Bajo'}
-																			{interaction.visitChecklist.clientInterest === 'none' && '? Ninguno'}
+																			{interaction.visitChecklist.clientInterest === 'high' && ' Alto'}
+																			{interaction.visitChecklist.clientInterest === 'medium' && ' Medio'}
+																			{interaction.visitChecklist.clientInterest === 'low' && '❄️ Bajo'}
+																			{interaction.visitChecklist.clientInterest === 'none' && ' Ninguno'}
 																		</p>
 																	</div>
 																)}
@@ -500,7 +500,7 @@ const LeadDetail: React.FC = () => {
 															
 															{interaction.visitChecklist.nextSteps && (
 																<div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-																	<span className="font-medium text-amber-900 text-sm">Pr?ximos Pasos:</span>
+																	<span className="font-medium text-amber-900 text-sm">Próximos Pasos:</span>
 																	<p className="text-amber-800 text-sm mt-1">{interaction.visitChecklist.nextSteps}</p>
 																</div>
 															)}
@@ -538,20 +538,20 @@ const LeadDetail: React.FC = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Descripci?n</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">descripción</label>
                                     <textarea
                                         value={editForm.nextAction || ''}
                                         onChange={(e) => setEditForm({ ...editForm, nextAction: e.target.value })}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#BEAF87] focus:border-transparent"
                                         rows={3}
-                                        placeholder="Describe la pr?xima acci?n a realizar..."
+                                        placeholder="Describe la Próxima Acción a realizar..."
                                     />
                                 </div>
                                 <button
                                     onClick={handleSaveEdit}
                                     className="mt-4 w-full px-4 py-2 bg-[#BEAF87] text-white rounded-lg hover:bg-[#A89770] font-semibold transition-all"
                                 >
-                                    Guardar Pr?xima Acci?n
+                                    Guardar Próxima Acción
                                 </button>
                                 
                                 {lead.nextAction && !isEditing && (
@@ -571,7 +571,7 @@ const LeadDetail: React.FC = () => {
                     {/* Right Column - Quick Actions */}
                     <div className="space-y-6">
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
-                            <h3 className="font-bold text-gray-900 mb-4">Acciones R?pidÃ­as</h3>
+                            <h3 className="font-bold text-gray-900 mb-4">Acciones Rápidas</h3>
                             <div className="space-y-3">
                                 <a href={`tel:${lead.phone}`} className="flex items-center gap-3 w-full px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
                                     <Phone className="w-5 h-5" />
@@ -591,7 +591,7 @@ const LeadDetail: React.FC = () => {
                                 </button>
                                 <button onClick={() => setShowInteractionModal(true)} className="flex items-center gap-3 w-full px-4 py-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors">
                                     <Calendar className="w-5 h-5" />
-                                    <span className="font-medium">Agendar Reuni?n</span>
+                                    <span className="font-medium">Agendar Reunión</span>
                                 </button>
                             </div>
 
@@ -602,7 +602,7 @@ const LeadDetail: React.FC = () => {
                             </div>
 
                             <div className="mt-4 pt-4 border-t">
-                                <h4 className="text-sm font-medium text-gray-700 mb-2">?ÃšÃšltima Actualizaci?n</h4>
+                                <h4 className="text-sm font-medium text-gray-700 mb-2">Última Actualización</h4>
                                 <p className="text-sm text-gray-600">{formatDate(lead.updatedAt)}</p>
                             </div>
                         </div>
@@ -616,7 +616,7 @@ const LeadDetail: React.FC = () => {
                     <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6 border-b sticky top-0 bg-white">
                             <div className="flex items-center justify-between">
-                                <h3 className="text-xl font-bold text-gray-900">NuevÃ­a Interacci?n</h3>
+                                <h3 className="text-xl font-bold text-gray-900">NuevÃ­a Interacción</h3>
                                 <button onClick={() => setShowInteractionModal(false)} className="text-gray-400 hover:text-gray-600">
                                     <X className="w-6 h-6" />
                                 </button>
@@ -624,20 +624,20 @@ const LeadDetail: React.FC = () => {
                         </div>
                         <div className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Interacci?n</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Interacción</label>
                                 <select value={newInteraction.type} onChange={(e) => setNewInteraction({ ...newInteraction, type: e.target.value as InteractionType })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#BEAF87] focus:border-transparent">
                                     <option value="NOTE">Nota</option>
                                     <option value="CALL">Llamada</option>
                                     <option value="WHATSAPP">WhatsApp</option>
                                     <option value="EMAIL">Email</option>
-                                    <option value="MEETING">Reuni?n</option>
+                                    <option value="MEETING">Reunión</option>
                                     <option value="VISIT">Visita</option>
                                     <option value="MESSENGER">Messenger</option>
                                 </select>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Contenido *</label>
-                                <textarea value={newInteraction.content} onChange={(e) => setNewInteraction({ ...newInteraction, content: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#BEAF87] focus:border-transparent" rows={4} placeholder="Describe la interacci?n..." required />
+                                <textarea value={newInteraction.content} onChange={(e) => setNewInteraction({ ...newInteraction, content: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#BEAF87] focus:border-transparent" rows={4} placeholder="Describe la Interacción..." required />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Notas Adicionales</label>
@@ -646,7 +646,7 @@ const LeadDetail: React.FC = () => {
                         </div>
                         <div className="p-6 border-t bg-gray-50 flex justify-end gap-3">
                             <button onClick={() => setShowInteractionModal(false)} className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100">Cancelar</button>
-                            <button onClick={handleAddInteraction} disabled={!newInteraction.content.trim()} className="px-4 py-2 bg-[#BEAF87] text-white rounded-lg hover:bg-[#A89770] disabled:opacity-50 disabled:cursor-not-allowed">Agregar Interacci?n</button>
+                            <button onClick={handleAddInteraction} disabled={!newInteraction.content.trim()} className="px-4 py-2 bg-[#BEAF87] text-white rounded-lg hover:bg-[#A89770] disabled:opacity-50 disabled:cursor-not-allowed">Agregar Interacción</button>
                         </div>
                     </div>
                 </div>
@@ -657,7 +657,7 @@ const LeadDetail: React.FC = () => {
                     <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full">
                         <div className="p-6 border-b">
                             <div className="flex items-center justify-between">
-                                <h3 className="text-xl font-bold text-gray-900">Agregar Propiedad de Inter?s</h3>
+                                <h3 className="text-xl font-bold text-gray-900">Agregar Propiedad de Interés</h3>
                                 <button onClick={() => setShowInterestModal(false)} className="text-gray-400 hover:text-gray-600">
                                     <X className="w-6 h-6" />
                                 </button>
@@ -674,7 +674,7 @@ const LeadDetail: React.FC = () => {
                         </div>
                         <div className="p-6 border-t bg-gray-50 flex justify-end gap-3">
                             <button onClick={() => setShowInterestModal(false)} className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100">Cancelar</button>
-                            <button onClick={handleAddInterest} disabled={!selectedPropertyId} className="px-4 py-2 bg-[#BEAF87] text-white rounded-lg hover:bg-[#A89770] disabled:opacity-50 disabled:cursor-not-allowed">Agregar Inter?s</button>
+                            <button onClick={handleAddInterest} disabled={!selectedPropertyId} className="px-4 py-2 bg-[#BEAF87] text-white rounded-lg hover:bg-[#A89770] disabled:opacity-50 disabled:cursor-not-allowed">Agregar Interés</button>
                         </div>
                     </div>
                 </div>

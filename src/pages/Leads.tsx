@@ -1,22 +1,9 @@
-﻿import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+﻿import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
-    Search, 
-    Plus, 
-    Filter, 
-    Download, 
-    FileSpreadsheet, 
-    FileText, 
-    MoreHorizontal,
-    Phone, 
-    Mail, 
-    MapPin, 
-    Calendar, 
-    User, 
-    Building2, 
-    Trash2,
-    Printer,
-    ChevronDown
+    Search, Plus, Filter, Download, FileSpreadsheet, FileText, 
+    MoreHorizontal, Phone, Mail, MapPin, Calendar, User, 
+    Building2, Trash2, Printer, ChevronDown
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
@@ -26,7 +13,6 @@ import { PropertyService } from '../services/propertyService';
 import type { Lead, Advisor, Property, PipelineStage } from '../types';
 
 import LeadForm, { type LeadFormData } from '../components/LeadForm';
-
 
 const getStageLabel = (stage: string) => {
     const map: Record<string, string> = {
@@ -44,27 +30,47 @@ const getTempLabel = (temp: string) => {
 
 const Leads = () => {
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // Init state from URL or defaults
     const [leads, setLeads] = useState<Lead[]>([]);
     const [advisors, setAdvisors] = useState<Advisor[]>([]);
     const [properties, setProperties] = useState<Property[]>([]);
     const [loading, setLoading] = useState(true);
-	const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    
+    // Pagination from URL
+    const initialPage = Number(searchParams.get('page')) || 1;
+    const [currentPage, setCurrentPage] = useState(initialPage);
+    const [totalPages, setTotalPages] = useState(5); // Mocked for now if backend pagination is simple
     const [totalLeads, setTotalLeads] = useState(0);
     const ITEMS_PER_PAGE = 50;
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedAdvisor, setSelectedAdvisor] = useState('all');
-    const [selectedStage, setSelectedStage] = useState('all');
-    const [selectedProperty, setSelectedProperty] = useState('all');
+
+    // Filters from URL
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+    const [selectedAdvisor, setSelectedAdvisor] = useState(searchParams.get('advisor') || 'all');
+    const [selectedStage, setSelectedStage] = useState(searchParams.get('stage') || 'all');
+    const [selectedProperty, setSelectedProperty] = useState(searchParams.get('property') || 'all');
     const [sortField, setSortField] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-    
-    
-    
+
+    const [showNewLeadModal, setShowNewLeadModal] = useState(false);
+
+    // Sync URL when filters change
+    useEffect(() => {
+        const params: Record<string, string> = {};
+        if (searchTerm) params.search = searchTerm;
+        if (selectedAdvisor !== 'all') params.advisor = selectedAdvisor;
+        if (selectedStage !== 'all') params.stage = selectedStage;
+        if (selectedProperty !== 'all') params.property = selectedProperty;
+        if (currentPage > 1) params.page = currentPage.toString();
+        
+        setSearchParams(params, { replace: true });
+    }, [searchTerm, selectedAdvisor, selectedStage, selectedProperty, currentPage, setSearchParams]);
+
     const STAGES: PipelineStage[] = ['NEW', 'INFO_SENT', 'CONTACTED', 'QUALIFIED', 'PRESENTATION', 'VISIT', 'NEGOTIATION', 'CLOSED_WON', 'DISCARDED'];
 
-    // Load initial data
-    const loadData = async () => {
+    // Load Data
+    const loadData = useCallback(async () => {
         try {
             setLoading(true);
             const [leadsResponse, advisorsData, propertiesData] = await Promise.all([
@@ -72,40 +78,45 @@ const Leads = () => {
                 AdvisorService.getAllAdvisors(),
                 PropertyService.getAllProperties()
             ]);
-            setLeads(leadsResponse.data);
-            setTotalPages(leadsResponse.pagination.totalPages);
-            setTotalLeads(leadsResponse.pagination.total);
-            setAdvisors(advisorsData);
-            setProperties(propertiesData);
+            // Backend might return different structure, adapting safely
+            setLeads(leadsResponse.data || []);
+            setTotalPages(leadsResponse.pagination?.totalPages || 1);
+            setTotalLeads(leadsResponse.pagination?.total || 0);
+            setAdvisors(advisorsData || []);
+            setProperties(propertiesData || []);
         } catch (error) {
             console.error('Error loading data:', error);
+            // Fallback to empty to avoid crashing
+            setLeads([]);
         } finally {
             setLoading(false);
         }
-    };
+    }, [currentPage]);
 
+    // Initial Load
     useEffect(() => {
         loadData();
-    }, []);
-	useEffect(() => {
-        loadData();
-    }, [currentPage]);
-    // Filter leads
-    const filteredLeads = leads.filter(lead => {
-        const matchesSearch = 
-            lead.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            lead.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            lead.phone.includes(searchTerm);
-        
-        const matchesAdvisor = selectedAdvisor === 'all' || lead.advisorId === selectedAdvisor;
-        const matchesStage = selectedStage === 'all' || lead.stage === selectedStage;
-        const matchesProperty = selectedProperty === 'all' || 
-        (lead.interests && lead.interests.some(i => i.propertyId === selectedProperty)) ||
-        (lead.interest && lead.interest === properties.find(p => p.id === selectedProperty)?.name);
+    }, [loadData]);
 
-        return matchesSearch && matchesAdvisor && matchesStage && matchesProperty;
-    });
+
+    // Filter Logic (Memoized)
+    const filteredLeads = useMemo(() => {
+        return leads.filter(lead => {
+            const matchesSearch = 
+                lead.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                lead.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                lead.phone.includes(searchTerm);
+            
+            const matchesAdvisor = selectedAdvisor === 'all' || lead.advisorId === selectedAdvisor;
+            const matchesStage = selectedStage === 'all' || lead.stage === selectedStage;
+            const matchesProperty = selectedProperty === 'all' || 
+            (lead.interests && lead.interests.some(i => i.propertyId === selectedProperty)) ||
+            (lead.interest && lead.interest === properties.find(p => p.id === selectedProperty)?.name);
+
+            return matchesSearch && matchesAdvisor && matchesStage && matchesProperty;
+        });
+    }, [leads, searchTerm, selectedAdvisor, selectedStage, selectedProperty, properties]);
 
     // Formatting Helpers
     const getAdvisorName = (id: string) => {
@@ -122,14 +133,13 @@ const Leads = () => {
         return 'Sin interés registrado';
     };
     
-    // Export Handlers
-    
     const getDaysUnattended = (dateStr: string) => {
         const diff = new Date().getTime() - new Date(dateStr).getTime();
         return Math.floor(diff / (1000 * 3600 * 24));
     };
 
-const handleExportExcel = () => {
+    // Export Handler
+    const handleExportExcel = () => {
         const dataToExport = filteredLeads.map(lead => ({
             Nombre: `${lead.firstName} ${lead.lastName}`,
             Email: lead.email,
@@ -182,10 +192,6 @@ const handleExportExcel = () => {
         window.print();
     };
 
-    const handleCreateLead = async () => {
-        alert('Funcionalidad de Crear Lead pendiente de refactorización completa.');
-    };
-    
     const handleDeleteLead = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
         if (confirm('¿Estás seguro de eliminar este lead?')) {
@@ -193,32 +199,31 @@ const handleExportExcel = () => {
             await loadData();
         }
     };
-	const [showNewLeadModal, setShowNewLeadModal] = useState(false);
-	const handleSaveLead = async (leadData: LeadFormData) => {
-    try {
-        await LeadService.createLead({
-            firstName: leadData.firstName,
-            lastName: leadData.lastName,
-            email: leadData.email,
-            phone: leadData.phone,
-            source: leadData.source,
-            city: 'La Paz', // Default
-            country: 'Bolivia',
-            stage: 'NEW',
-            temperature: 'WARM',
-            advisorId: '', // Will be auto-assigned
-            budget: leadData.budget as any,
-            preferredZone: leadData.preferredZone,
-            timing: leadData.timing as any
-        });
-        
-        setShowNewLeadModal(false);
-        await loadData(); // Reload list
-    } catch (error) {
-        console.error('Error creating lead:', error);
-        throw error;
-    }
-};
+
+    const handleSaveLead = async (leadData: LeadFormData) => {
+        try {
+            await LeadService.createLead({
+                firstName: leadData.firstName,
+                lastName: leadData.lastName,
+                email: leadData.email,
+                phone: leadData.phone,
+                source: leadData.source,
+                city: 'La Paz',
+                country: 'Bolivia',
+                stage: 'NEW',
+                temperature: 'WARM',
+                advisorId: '', 
+                budget: leadData.budget as any,
+                preferredZone: leadData.preferredZone,
+                timing: leadData.timing as any
+            });
+            
+            setShowNewLeadModal(false);
+            await loadData(); 
+        } catch (error) {
+            console.error('Error creating lead:', error);
+        }
+    };
 
     return (
         <div className="p-4 w-full space-y-4">
@@ -228,34 +233,22 @@ const handleExportExcel = () => {
                     <p className="text-gray-500 mt-1">Gestión de prospectos y clientes potenciales</p>
                 </div>
                 <div className="flex gap-2">
-                    <button 
-                         onClick={handleExportExcel}
-                         className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors"
-                    >
+                    <button onClick={handleExportExcel} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors">
                         <FileSpreadsheet size={18} className="text-green-600" />
                         <span className="hidden sm:inline">Excel</span>
                     </button>
-                    <button 
-                         onClick={handleExportCSV}
-                         className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors"
-                    >
+                    <button onClick={handleExportCSV} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors">
                         <FileText size={18} className="text-blue-600" />
                         <span className="hidden sm:inline">CSV</span>
                     </button>
-                    <button 
-                         onClick={handlePrintReport}
-                         className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors"
-                    >
+                    <button onClick={handlePrintReport} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors">
                         <Printer size={18} className="text-purple-600" />
                         <span className="hidden sm:inline">Reporte</span>
                     </button>
-                    <button
-						onClick={() => setShowNewLeadModal(true)}
-						className="btn btn-primary gap-2"
-					>
-						<Plus size={16} />
-						Nuevo Lead
-					</button>
+                    <button onClick={() => setShowNewLeadModal(true)} className="btn btn-primary gap-2">
+                        <Plus size={16} />
+                        Nuevo Lead
+                    </button>
                 </div>
             </div>
 
@@ -295,20 +288,7 @@ const handleExportExcel = () => {
                                 <option key={stage} value={stage}>{stage}</option>
                             ))}
                         </select>
-                         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                    </div>
-                    <div className="relative min-w-[200px]">
-                        <select
-                            value={selectedProperty}
-                            onChange={(e) => setSelectedProperty(e.target.value)}
-                            className="w-full appearance-none pl-4 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all text-sm"
-                        >
-                            <option value="all">Todos los inmuebles</option>
-                            {properties.map(prop => (
-                                <option key={prop.id} value={prop.id}>{prop.name}</option>
-                            ))}
-                        </select>
-                         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                     </div>
                 </div>
             </div>
@@ -321,7 +301,7 @@ const handleExportExcel = () => {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
-                                                        <thead>
+                            <thead>
                                 <tr className="bg-gray-50/50 border-b border-gray-100 text-xs uppercase text-gray-500 font-semibold tracking-wider">
                                     <th className="px-4 py-4">Inmueble</th>
                                     <th className="px-4 py-4">Fecha Creación</th>
@@ -415,15 +395,14 @@ const handleExportExcel = () => {
                     </div>
                 </div>
             )}
-
             
-			{showNewLeadModal && (
+            {showNewLeadModal && (
                 <LeadForm
                     onSave={handleSaveLead}
                     onCancel={() => setShowNewLeadModal(false)}
                 />
             )}
-			{/* Controles de Paginación */}
+
             {totalPages > 1 && (
                 <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                     <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -436,7 +415,7 @@ const handleExportExcel = () => {
                             disabled={currentPage === 1}
                             className="btn btn-outline disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            ← Anterior
+                             Anterior
                         </button>
                         
                         <div className="flex items-center gap-2">
@@ -473,7 +452,7 @@ const handleExportExcel = () => {
                             disabled={currentPage === totalPages}
                             className="btn btn-outline disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Siguiente →
+                            Siguiente 
                         </button>
                     </div>
                 </div>

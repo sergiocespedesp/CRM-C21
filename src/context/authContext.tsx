@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
 
 export type UserRole = 'ADMIN' | 'ADVISOR';
@@ -48,51 +48,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, []);
 
-       const login = async (username: string, password: string): Promise<boolean> => {
+           const login = async (username: string, password: string): Promise<boolean> => {
         try {
-            // MOCK LOGIN - Simular autenticación sin backend
-            const MOCK_USERS = [
-                {
-                    id: '1',
-                    email: 'admin@c21.com',
-                    password: 'admin',
-                    name: 'Administrador',
-                    role: 'ADMIN' as UserRole
-                },
-                {
-                    id: '2',
-                    email: 'asesor@c21.com',
-                    password: 'asesor',
-                    name: 'Asesor Demo',
-                    role: 'ADVISOR' as UserRole
-                }
-            ];
-
-            // Buscar usuario
-            const foundUser = MOCK_USERS.find(
-                u => u.email === username && u.password === password
-            );
-
-            if (!foundUser) {
-                console.error('Usuario o contraseña incorrectos');
-                return false;
-            }
-
-            // Simular token
-            const mockToken = `mock-token-${foundUser.id}-${Date.now()}`;
-            localStorage.setItem('token', mockToken);
-            
-            // Guardar usuario
-            setUser({
-                id: foundUser.id,
-                username: foundUser.email,
-                name: foundUser.name,
-                email: foundUser.email,
-                role: foundUser.role,
-                advisorId: foundUser.id
+            // Real API Call
+            const response = await api.post('/auth/login', { 
+                email: username, 
+                password 
             });
+            
+            const { access_token, user } = response.data;
 
-            return true;
+            if (access_token) {
+                localStorage.setItem('token', access_token);
+                if (user) {
+                     setUser({
+                        id: user.id || 'unknown',
+                        username: user.email,
+                        name: user.name,
+                        email: user.email,
+                        role: user.role,
+                        advisorId: user.id
+                    });
+                } else {
+                     const meResponse = await api.get('/auth/me');
+                     const userData = meResponse.data;
+                     setUser({
+                        id: userData.id,
+                        username: userData.email,
+                        name: userData.name,
+                        email: userData.email,
+                        role: userData.role,
+                        advisorId: userData.id
+                    });
+                }
+                return true;
+            }
+            return false;
         } catch (error) {
             console.error('Login failed:', error);
             return false;
@@ -118,3 +109,4 @@ export const useAuth = () => {
     }
     return context;
 };
+

@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Brand Colors - Century 21 Premium */
+    --color-primary: #BEAF87; /* C21 Gold */
+    --color-primary-dark: #A09370;
+    --color-primary-light: #D4C9AA;
+    --color-secondary: #1A1A1A; /* C21 Black */
+    --color-secondary-light: #2C2C2C;
+    
+    /* Semantic Colors */
+    --color-success: #10B981;
+    --color-danger: #EF4444;
+    --color-warning: #F59E0B;
+    --color-info: #3B82F6;
+
+    /* Backgrounds - Light Mode */
+    --bg-main: #F3F4F6;
+    --bg-sidebar: #1A1A1A;
+    --bg-glass: rgba(255, 255, 255, 0.9);
+    --bg-card: #FFFFFF;
+    --bg-surface: #F9FAFB;
+
+    /* Text */
+    --text-main: #111827;
+    --text-muted: #6B7280;
+    --text-inverse: #FFFFFF;
+
+    /* Borders & Effects */
+    --border-color: #E5E7EB;
+    --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    
+    /* Animation */
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  .dark {
+    /* Backgrounds - Dark Mode */
+    --bg-main: #0f1115;
+    --bg-sidebar: #050505;
+    --bg-glass: rgba(17, 24, 39, 0.7);
+    --bg-card: #1F2937;
+    --bg-surface: #111827;
+    
+    /* Text */
+    --text-main: #F9FAFB;
+    --text-muted: #9CA3AF;
+    --border-color: #374151;
+  }
+
+  body {
+    @apply antialiased overflow-auto;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 14px;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-gray-300 dark:bg-gray-600 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-gray-400 dark:bg-gray-500; }
+}
+@layer components {
+  /* Premium Glassmorphism Cards - Mobile First */
+  .card {
+    @apply relative bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 overflow-hidden flex flex-col mb-3 sm:mb-4;
+  }
+  
+  .card-hover {
+    @apply hover:shadow-xl hover:-translate-y-1 hover:border-[var(--color-primary)]/30;
+  }
+
+  /* Header Variants - Responsive Padding */
+  .card-header {
+    @apply px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 flex justify-between items-center gap-2;
+  }
+
+  .card-body {
+    @apply p-4 sm:p-6 flex-1 overflow-auto;
+  }
+
+  /* Modern Buttons - Touch Friendly (min 44px height) */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 sm:px-5 py-3 sm:py-2.5 rounded-lg font-semibold text-sm transition-all duration-300 border focus:ring-4 focus:ring-opacity-20 outline-none gap-2 shadow-sm active:scale-95 min-h-[44px] touch-manipulation;
+  }
+
+  .btn-sm {
+    @apply px-3 py-2 text-xs min-h-[36px];
+  }
+
+  .btn-lg {
+    @apply px-6 py-4 text-base min-h-[52px];
+  }
+
+  .btn-primary { 
+    @apply bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent hover:bg-black dark:hover:bg-gray-200 focus:ring-gray-500;
+  }
+  
+  .btn-secondary {
+    @apply bg-[#BEAF87] text-white border-transparent hover:bg-[#A89770] focus:ring-[#BEAF87];
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-gray-600 dark:text-gray-300 border-transparent hover:bg-gray-100 dark:hover:bg-gray-800;
+  }
+  
+  .btn-outline {
+    @apply bg-transparent border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800;
+  }
+  
+  .btn-warning {
+    @apply bg-amber-500 text-white border-transparent hover:bg-amber-600 focus:ring-amber-500;
+  }
+
+  /* Form Elements - Touch Friendly */
+  .input {
+    @apply w-full px-3 sm:px-4 py-3 sm:py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm sm:text-base transition-all duration-200 focus:ring-2 focus:ring-[#BEAF87]/20 focus:border-[#BEAF87] outline-none min-h-[44px] touch-manipulation;
+  }
+  
+  input, select, textarea {
+    @apply w-full px-3 sm:px-4 py-3 sm:py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md text-sm sm:text-base focus:ring-2 focus:ring-[#BEAF87] focus:border-transparent outline-none transition-all min-h-[44px] touch-manipulation;
+  }
+
+  textarea {
+    @apply min-h-[88px];
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ring-1 ring-inset;
+  }
+  .badge-success { @apply bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-900/30 dark:text-green-400; }
+  .badge-warning { @apply bg-yellow-50 text-yellow-800 ring-yellow-600/20 dark:bg-yellow-900/30 dark:text-yellow-400; }
+  .badge-danger { @apply bg-red-50 text-red-700 ring-red-600/10 dark:bg-red-900/30 dark:text-red-400; }
+  .badge-neutral { @apply bg-gray-50 text-gray-600 ring-gray-500/10 dark:bg-gray-800 dark:text-gray-400; }
+
+  /* Mobile Utilities */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  .mobile-padding {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+
+  .mobile-text {
+    @apply text-sm sm:text-base;
+  }
+
+  /* Responsive Grid */
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6;
+  }
+
+  .grid-responsive-2 {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6;
+  }
+}
+
+/* Animations */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s var(--ease-out-expo) forwards;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+/* Mobile-specific improvements */
+@media (max-width: 640px) {
+  /* Reduce motion for better mobile performance */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Improve tap highlighting */
+  * {
+    -webkit-tap-highlight-color: rgba(190, 175, 135, 0.1);
+  }
+
+  /* Better scrolling on iOS */
+  .overflow-auto, .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+}

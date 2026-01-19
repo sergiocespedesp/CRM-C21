@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // url removed for Prisma 7 config
+}
+
+enum Role {
+  ADMIN
+  ADVISOR
+}
+
+enum LeadTemperature {
+  HOT
+  WARM
+  COLD
+}
+
+enum LeadStage {
+  NEW
+  INFO_SENT
+  CONTACTED
+  QUALIFIED
+  PRESENTATION
+  VISIT
+  NEGOTIATION
+  CLOSED_WON
+  DISCARDED
+}
+
+enum InteractionType {
+  CALL
+  WHATSAPP
+  EMAIL
+  VISIT
+  NOTE
+  NEXT_ACTION
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(ADVISOR)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  leads        Lead[]
+  interactions Interaction[]
+}
+
+model Lead {
+  id           String          @id @default(uuid())
+  firstName    String
+  lastName     String
+  email        String?
+  phone        String
+  temperature  LeadTemperature @default(WARM)
+  stage        LeadStage       @default(NEW)
+  source       String?
+  budget       Decimal?
+  preferredZone String?
+  interest     String?         // Description of interest
+
+  nextAction     String?
+  nextActionDate DateTime?
+  
+  advisorId    String?
+  advisor      User?    @relation(fields: [advisorId], references: [id])
+
+  interactions Interaction[]
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Interaction {
+  id        String          @id @default(uuid())
+  type      InteractionType
+  content   String
+  notes     String?
+  date      DateTime        @default(now())
+  
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  advisorId String?
+  advisor   User?    @relation(fields: [advisorId], references: [id])
+}
+
+model Property {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  price       Decimal 
+  location    String?
+  status      String   @default("AVAILABLE")
+  features    Json?    // Flexible feature list
+  images      String[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

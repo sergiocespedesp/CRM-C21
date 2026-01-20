@@ -19,7 +19,7 @@ import {
     ExternalLink
 } from 'lucide-react';
 import { useLead, useUpdateLead, useAddInterest } from '../hooks/useLeads';
-import { useProperties } from '../hooks/useProperties';
+import { useProperties, useUnits } from '../hooks/useProperties';
 import { useAdvisors } from '../hooks/useAdvisors';
 import { useAddInteraction, useCreateVisitInteraction } from '../hooks/useInteractions';
 import type { Lead, Interaction, Property, Advisor, Interest, PipelineStage, LeadTemperature, InteractionType, VisitChecklist } from '../types';

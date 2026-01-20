@@ -35,7 +35,7 @@ export const InteractionService = {
             leadId,
             advisorId,
             type: 'VISIT',
-            origin: 'MANUAL',
+            // origin: 'MANUAL',
             date: new Date(checklist.visitDate).toISOString(),
             content: `Visita realizada - Interés: ${checklist.clientInterest}`,
             notes: checklist.notes,
@@ -54,3 +54,4 @@ export const InteractionService = {
         await api.delete(`/interactions/${id}`);
     }
 };
+

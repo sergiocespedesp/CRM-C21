@@ -70,7 +70,8 @@ const LeadDetail: React.FC = () => {
     const handleSaveEdit = async () => {
         if (!lead || !id) return;
         try {
-            await updateLead.mutateAsync({ id, data: editForm });
+            const { interactions, advisor, interests, id: _, createdAt, updatedAt, ...cleanData } = editForm;
+            await updateLead.mutateAsync({ id, data: cleanData });
             toast.success('Lead actualizado exitosamente');
             setIsEditing(false);
         } catch (error) {
@@ -85,7 +86,7 @@ const LeadDetail: React.FC = () => {
             const result = await addInteraction.mutateAsync({
                 leadId: lead.id,
                 type: newInteraction.type,
-                origin: 'MANUAL',
+                // origin: 'MANUAL',
                 content: newInteraction.content,
                 advisorId: lead.advisorId,
                 notes: newInteraction.notes

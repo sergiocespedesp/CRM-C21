@@ -7,12 +7,26 @@ import { AuthGuard } from '@nestjs/passport';
 @Controller('leads')
 @UseGuards(AuthGuard('jwt'))
 export class LeadsController {
-    constructor(private readonly leadsService: LeadsService) { }
+    constructor(private readonly leadsService: LeadsService) { 
+
+    @Post(':id/interests')
+    addInterest(@Param('id') leadId: string, @Body() interestData: { propertyId: string; notes?: string }) {
+        return this.leadsService.addInterest(leadId, interestData);
+    }
+
+}
 
     @Post()
     create(@Body() createLeadDto: CreateLeadDto) {
         return this.leadsService.create(createLeadDto);
+    
+
+    @Post(':id/interests')
+    addInterest(@Param('id') leadId: string, @Body() interestData: { propertyId: string; notes?: string }) {
+        return this.leadsService.addInterest(leadId, interestData);
     }
+
+}
 
     @Get()
     findAll(
@@ -22,20 +36,55 @@ export class LeadsController {
         const pageNum = page ? parseInt(page, 10) : 1;
         const limitNum = limit ? parseInt(limit, 10) : 50;
         return this.leadsService.findAll(pageNum, limitNum);
+    
+
+    @Post(':id/interests')
+    addInterest(@Param('id') leadId: string, @Body() interestData: { propertyId: string; notes?: string }) {
+        return this.leadsService.addInterest(leadId, interestData);
     }
+
+}
 
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.leadsService.findOne(id);
+    
+
+    @Post(':id/interests')
+    addInterest(@Param('id') leadId: string, @Body() interestData: { propertyId: string; notes?: string }) {
+        return this.leadsService.addInterest(leadId, interestData);
     }
+
+}
 
     @Patch(':id')
     update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto) {
         return this.leadsService.update(id, updateLeadDto);
+    
+
+    @Post(':id/interests')
+    addInterest(@Param('id') leadId: string, @Body() interestData: { propertyId: string; notes?: string }) {
+        return this.leadsService.addInterest(leadId, interestData);
     }
+
+}
 
     @Delete(':id')
     remove(@Param('id') id: string) {
         return this.leadsService.remove(id);
+    
+
+    @Post(':id/interests')
+    addInterest(@Param('id') leadId: string, @Body() interestData: { propertyId: string; notes?: string }) {
+        return this.leadsService.addInterest(leadId, interestData);
     }
+
+}
+
+
+    @Post(':id/interests')
+    addInterest(@Param('id') leadId: string, @Body() interestData: { propertyId: string; notes?: string }) {
+        return this.leadsService.addInterest(leadId, interestData);
+    }
+
 }

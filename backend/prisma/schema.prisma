@@ -72,6 +72,7 @@ model Lead {
   advisor      User?    @relation(fields: [advisorId], references: [id])
 
   interactions Interaction[]
+  interests    Interest[]
   
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -91,6 +92,17 @@ model Interaction {
   advisor   User?    @relation(fields: [advisorId], references: [id])
 }
 
+
+model Interest {
+  id         String   @id @default(uuid())
+  leadId     String
+  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+  notes      String?
+  createdAt  DateTime @default(now())
+}
+
 model Property {
   id          String   @id @default(uuid())
   title       String
@@ -101,6 +113,7 @@ model Property {
   features    Json?    // Flexible feature list
   images      String[]
   
+  interests   Interest[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

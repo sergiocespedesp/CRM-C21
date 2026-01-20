@@ -43,7 +43,7 @@ const LeadDetail: React.FC = () => {
     // Interactions - derived from lead data
     const interactions = React.useMemo(() => {
         if (!lead?.interactions) return [];
-        return [...lead.interactions].sort((a: Interaction, b: Interaction) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        return [...lead.interactions].filter((i: Interaction) => i.type !== 'NEXT_ACTION').sort((a: Interaction, b: Interaction) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }, [lead?.interactions]);
     
     const [isEditing, setIsEditing] = useState(false);
@@ -368,7 +368,7 @@ const LeadDetail: React.FC = () => {
                                                     <div className="flex items-center gap-4 text-sm text-gray-500">
                                                         <span>{property.zone}</span>
                                                         <span></span>
-                                                        <span className="font-semibold text-[#BEAF87]">{property.currency} {property.price.toLocaleString()}</span>
+                                                        <span className="font-semibold text-[#BEAF87]">{property.currency} {property.price?.toLocaleString() || '0'}</span>
                                                     </div>
                                                 </div>
                                                 <ExternalLink className="w-4 h-4 text-gray-400" />
@@ -669,7 +669,7 @@ const LeadDetail: React.FC = () => {
                             <select value={selectedPropertyId} onChange={(e) => setSelectedPropertyId(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#BEAF87] focus:border-transparent">
                                 <option value="">-- Seleccionar --</option>
                                 {properties.filter(p => !lead.interests?.some(i => i.propertyId === p.id)).map(property => (
-                                    <option key={property.id} value={property.id}>{property.name} - {property.zone} ({property.currency} {property.price.toLocaleString()})</option>
+                                    <option key={property.id} value={property.id}>{property.name} - {property.zone} ({property.currency} {property.price?.toLocaleString() || '0'})</option>
                                 ))}
                             </select>
                         </div>

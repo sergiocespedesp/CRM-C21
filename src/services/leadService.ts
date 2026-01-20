@@ -117,6 +117,16 @@ export const LeadService = {
       return interactions.filter(i => i.leadId === leadId);
   },
 
+
+
+  addInterest: async (interest: Interest): Promise<Interest> => {
+    const response = await api.post(/leads//interests, {
+      propertyId: interest.propertyId,
+      notes: interest.notes
+    });
+    return response.data;
+  },
+
   // Deprecated sync methods stubs
   getLeads: () => [],
   getInteractions: () => [],

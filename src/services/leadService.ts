@@ -117,7 +117,7 @@ export const LeadService = {
 
 
   addInterest: async (interest: Interest): Promise<Interest> => {
-    const response = await api.post(/leads//interests, {
+    const response = await api.post(`/leads/${interest.leadId}/interests`, {
       propertyId: interest.propertyId,
       notes: interest.notes
     });

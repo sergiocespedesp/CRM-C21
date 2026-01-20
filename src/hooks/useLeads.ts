@@ -86,6 +86,8 @@ export function useAddInterest() {
     mutationFn: (interest: Interest) => LeadService.addInterest(interest),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: leadKeys.detail(variables.leadId) });
+      queryClient.invalidateQueries({ queryKey: leadKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: leadKeys.all });
     },
   });
 }

@@ -126,7 +126,7 @@ const Leads = () => {
 
     const getPropertyName = (lead: Lead) => {
         if (lead.interests && lead.interests.length > 0) {
-            const lastInterest = lead.interests[leads.length - 1] || lead.interests[0];
+            const lastInterest = lead.interests[lead.interests.length - 1];
             const prop = properties.find(p => p.id === lastInterest.propertyId);
             return prop ? prop.name : 'Propiedad no encontrada';
         }

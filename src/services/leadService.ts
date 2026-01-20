@@ -70,10 +70,7 @@ export const LeadService = {
        return response.data;
   },
 
-  addInterest: async (interest: any): Promise<any> => {
-      console.warn('Backend does not support structured Interest resource yet. Operation simulated.', interest);
-      return interest;
-  },
+
 
   ingestLead: async (data: any): Promise<{ lead: Lead; isNew: boolean }> => {
       try {

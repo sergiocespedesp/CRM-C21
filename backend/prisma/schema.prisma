@@ -93,6 +93,24 @@ model Interaction {
 }
 
 
+
+model PropertyUnit {
+  id         String   @id @default(uuid())
+  name       String
+  type       String
+  floor      Int?
+  area       Decimal?
+  bedrooms   String?
+  bathrooms  Int?
+  price      Decimal
+  currency   String   @default("USD")
+  status     String   @default("AVAILABLE")
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
 model Interest {
   id         String   @id @default(uuid())
   leadId     String
@@ -114,6 +132,7 @@ model Property {
   images      String[]
   
   interests   Interest[]
+  units       PropertyUnit[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

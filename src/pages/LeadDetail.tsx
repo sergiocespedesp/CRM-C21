@@ -32,6 +32,7 @@ const LeadDetail: React.FC = () => {
     // React Query Hooks
     const { data: lead, isLoading: loading } = useLead(id || "");
     const { data: properties = [] } = useProperties();
+    const { data: units = [] } = useUnits();
     const { data: advisors = [] } = useAdvisors();
 
     // Mutations
@@ -668,9 +669,26 @@ const LeadDetail: React.FC = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-2">Seleccionar Propiedad</label>
                             <select value={selectedPropertyId} onChange={(e) => setSelectedPropertyId(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#BEAF87] focus:border-transparent">
                                 <option value="">-- Seleccionar --</option>
-                                {properties.filter(p => !lead.interests?.some(i => i.propertyId === p.id)).map(property => (
-                                    <option key={property.id} value={property.id}>{property.name} - {property.zone} ({property.currency} {property.price?.toLocaleString() || '0'})</option>
-                                ))}
+                                {properties.filter(p => !lead.interests?.some(i => i.propertyId === p.id)).map(property => {
+                                    const propertyUnits = units.filter(u => u.propertyId === property.id);
+                                    if (property.isProject && propertyUnits.length > 0) {
+                                        return (
+                                            <optgroup key={property.id} label={${property.name} - }>
+                                                {propertyUnits.map(unit => (
+                                                    <option key={unit.id} value={unit.id}>
+                                                        {unit.name} - {unit.area}m - {unit.currency} {unit.price?.toLocaleString() || '0'}
+                                                    </option>
+                                                ))}
+                                            </optgroup>
+                                        );
+                                    } else {
+                                        return (
+                                            <option key={property.id} value={property.id}>
+                                                {property.name} - {property.zone} ({property.currency} {property.price?.toLocaleString() || '0'})
+                                            </option>
+                                        );
+                                    }
+                                })}
                             </select>
                         </div>
                         <div className="p-6 border-t bg-gray-50 flex justify-end gap-3">

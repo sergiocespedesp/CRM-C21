@@ -673,7 +673,7 @@ const LeadDetail: React.FC = () => {
                                     const propertyUnits = units.filter(u => u.propertyId === property.id);
                                     if (property.isProject && propertyUnits.length > 0) {
                                         return (
-                                            <optgroup key={property.id} label={${property.name} - }>
+                                            <optgroup key={property.id} label={`${property.name} - ${property.zone}`}>
                                                 {propertyUnits.map(unit => (
                                                     <option key={unit.id} value={unit.id}>
                                                         {unit.name} - {unit.area}m - {unit.currency} {unit.price?.toLocaleString() || '0'}

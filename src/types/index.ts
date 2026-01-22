@@ -6,13 +6,15 @@ export type PipelineStage =
     | 'PRESENTATION'
     | 'VISIT'
     | 'NEGOTIATION'
-    | 'OTHER_REQUIREMENT'
+    | 'OTHER_REQUIREMENT'
+
     | 'CLOSED_WON'
     | 'DISCARDED';
 
-export type LeadTemperature = 'NONE' | 'COLD' | 'WARM' | 'HOT';
+export type LeadTemperature = 'NONE' | 'COLD' | 'WARM' | 'HOT';
 
-export type InteractionType = 'CALL' | 'WHATSAPP' | 'EMAIL' | 'MEETING' | 'NOTE' | 'VISIT' | 'NEXT_ACTION' | 'MESSENGER';
+
+export type InteractionType = 'CALL' | 'WHATSAPP' | 'EMAIL' | 'VISIT' | 'NOTE' | 'NEXT_ACTION';
 
 export type InteractionOrigin = 'META_ADS' | 'WHATSAPP_API' | 'MANUAL' | 'WEBSITE' | 'SYSTEM';
 

@@ -16,9 +16,10 @@ import {
     Save,
     X,
     Plus,
-    ExternalLink
+    ExternalLink,
+    Trash2
 } from 'lucide-react';
-import { useLead, useUpdateLead, useAddInterest } from '../hooks/useLeads';
+import { useLead, useUpdateLead, useDeleteLead, useAddInterest } from '../hooks/useLeads';
 import { useProperties, useUnits } from '../hooks/useProperties';
 
 import { useAdvisors } from '../hooks/useAdvisors';
@@ -38,6 +39,7 @@ const LeadDetail: React.FC = () => {
 
     // Mutations
     const updateLead = useUpdateLead();
+    const deleteLead = useDeleteLead();
     const addInteraction = useAddInteraction();
     const createVisit = useCreateVisitInteraction();
     const addInterest = useAddInterest();
@@ -68,6 +70,21 @@ const LeadDetail: React.FC = () => {
     const [showInterestModal, setShowInterestModal] = useState(false);
     const [selectedPropertyId, setSelectedPropertyId] = useState("");
     const [showVisitModal, setShowVisitModal] = useState(false);
+
+    
+    const handleDelete = async () => {
+        if (!lead || !id) return;
+        if (confirm('¿Estás seguro de eliminar este lead? Esta acción no se puede deshacer.')) {
+            try {
+                await deleteLead.mutateAsync(id);
+                toast.success('Lead eliminado');
+                navigate('/leads');
+            } catch (error) {
+                console.error('Error deleting lead:', error);
+                toast.error('Error al eliminar el lead');
+            }
+        }
+    };
 
     const handleSaveEdit = async () => {
         if (!lead || !id) return;
@@ -237,6 +254,10 @@ const LeadDetail: React.FC = () => {
                                 </button>
                             ) : (
                                 <>
+                                    <button onClick={handleDelete} className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-100 rounded-lg hover:bg-red-100 mr-auto">
+                                        <Trash2 className="w-4 h-4" />
+                                        Eliminar
+                                    </button>
                                     <button onClick={() => { setIsEditing(false); setEditForm(lead); }} className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
                                         <X className="w-4 h-4" />
                                         Cancelar
@@ -422,8 +443,19 @@ const LeadDetail: React.FC = () => {
                                                     }
                                                 }}
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#BEAF87] focus:border-transparent text-sm"
-                                                placeholder="Escribe la Acción realizada y presiona Enter..."
+                                                placeholder="Escribe la Acción realizada..."
                                             />
+                                            <div className="flex gap-2 mt-2">
+                                                {['No Contesta', 'Buzón de Voz', 'Volver a llamar', 'Interesado'].map(text => (
+                                                    <button
+                                                        key={text}
+                                                        onClick={() => setNewInteraction(prev => ({ ...prev, content: text }))}
+                                                        className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors"
+                                                    >
+                                                        {text}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
                                     <button

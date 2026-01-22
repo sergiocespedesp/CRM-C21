@@ -1,9 +1,9 @@
-﻿import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
     Search, Plus, Filter, Download, FileSpreadsheet, FileText, 
     MoreHorizontal, Phone, Mail, MapPin, Calendar, User, 
-    Building2, Trash2, Printer, ChevronDown
+    Building2, Trash2, Printer, ChevronDown, MessageSquarePlus
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
@@ -13,6 +13,7 @@ import { PropertyService } from '../services/propertyService';
 import type { Lead, Advisor, Property, PipelineStage } from '../types';
 
 import LeadForm, { type LeadFormData } from '../components/LeadForm';
+import QuickInteractionModal from '../components/QuickInteractionModal';
 
 const getStageLabel = (stage: string) => {
     const map: Record<string, string> = {
@@ -58,6 +59,7 @@ const Leads = () => {
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
     const [showNewLeadModal, setShowNewLeadModal] = useState(false);
+    const [selectedLeadForAction, setSelectedLeadForAction] = useState<{id: string, name: string, advisorId?: string} | null>(null);
 
     // Sync URL when filters change
     useEffect(() => {
@@ -204,6 +206,16 @@ const Leads = () => {
         }
     };
 
+    const handleUpdateLeadField = async (leadId: string, field: string, value: string) => {
+        try {
+            await LeadService.updateLead(leadId, { [field]: value });
+            // Update local state to reflect change immediately
+            setLeads(prev => prev.map(l => l.id === leadId ? { ...l, [field]: value } : l));
+        } catch (error) {
+            console.error(`Error updating lead ${field}:`, error);
+        }
+    };
+
     const handleSaveLead = async (leadData: LeadFormData) => {
         try {
             await LeadService.createLead({
@@ -328,8 +340,8 @@ const Leads = () => {
                                         onClick={() => navigate(`/leads/${lead.id}`)}
                                         className="group hover:bg-gray-50 transition-colors cursor-pointer text-sm"
                                     >
-                                        <td className="px-4 py-4 text-gray-600 truncate max-w-[200px]" title={lead.interest}>
-                                            {lead.interest || '-'}
+                                        <td className="px-4 py-4 text-gray-600 truncate max-w-[200px]" title={getPropertyName(lead)}>
+                                            {getPropertyName(lead)}
                                         </td>
                                         <td className="px-4 py-4 whitespace-nowrap">
                                             {new Date(lead.createdAt).toLocaleDateString()}
@@ -343,29 +355,61 @@ const Leads = () => {
                                         <td className="px-4 py-4 text-gray-500">
                                             {lead.city || '-'}
                                         </td>
-                                        <td className="px-4 py-4">
-                                            {getAdvisorName(lead.advisorId)}
+                                                                                <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
+                                            <div className="relative group/select">
+                                                <select
+                                                    value={lead.advisorId || ''}
+                                                    onChange={(e) => handleUpdateLeadField(lead.id, 'advisorId', e.target.value)}
+                                                    className="appearance-none w-full bg-transparent pr-6 py-1 border-b border-transparent hover:border-gray-300 focus:border-black focus:outline-none cursor-pointer transition-all text-gray-700"
+                                                >
+                                                    <option value="">Sin asignar</option>
+                                                    {advisors.map(adv => (
+                                                        <option key={adv.id} value={adv.id}>{adv.name}</option>
+                                                    ))}
+                                                </select>
+                                                <ChevronDown size={14} className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 group-hover/select:text-gray-600 pointer-events-none" />
+                                            </div>
                                         </td>
-                                        <td className="px-4 py-4">
-                                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                                                ${lead.stage === 'NEW' ? 'bg-blue-50 text-blue-700' : 
-                                                  lead.stage === 'CONTACTED' ? 'bg-yellow-50 text-yellow-700' :
-                                                  lead.stage === 'QUALIFIED' ? 'bg-purple-50 text-purple-700' :
-                                                  lead.stage === 'CLOSED_WON' ? 'bg-green-50 text-green-700' :
-                                                  'bg-gray-50 text-gray-700'}`}>
-                                                {getStageLabel(lead.stage)}
-                                            </span>
+                                        <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
+                                            <div className="relative group/select">
+                                                <select
+                                                    value={lead.stage}
+                                                    onChange={(e) => handleUpdateLeadField(lead.id, 'stage', e.target.value)}
+                                                    className={`appearance-none w-full pr-6 py-1 rounded-full text-xs font-medium border border-transparent hover:border-gray-300 focus:outline-none cursor-pointer transition-all text-center
+                                                        ${lead.stage === 'NEW' ? 'bg-blue-50 text-blue-700' : 
+                                                          lead.stage === 'CONTACTED' ? 'bg-yellow-50 text-yellow-700' :
+                                                          lead.stage === 'QUALIFIED' ? 'bg-purple-50 text-purple-700' :
+                                                          lead.stage === 'CLOSED_WON' ? 'bg-green-50 text-green-700' :
+                                                          'bg-gray-50 text-gray-700'}`}
+                                                >
+                                                    {STAGES.map(stage => (
+                                                        <option key={stage} value={stage} className="bg-white text-gray-900">{getStageLabel(stage)}</option>
+                                                    ))}
+                                                </select>
+                                                <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 group-hover/select:text-gray-600 pointer-events-none" />
+                                            </div>
                                         </td>
-                                        <td className="px-4 py-4">
-                                            <div className="flex items-center gap-1.5">
-                                                <div className={`w-2 h-2 rounded-full ${
-                                                    lead.temperature === 'HOT' ? 'bg-red-500' :
-                                                    lead.temperature === 'WARM' ? 'bg-yellow-500' :
-                                                    lead.temperature === 'COLD' ? 'bg-blue-400' :
-                                                    lead.temperature === 'NONE' ? 'bg-gray-200' :
-                                                    'bg-gray-300'
-                                                }`} />
-                                                {getTempLabel(lead.temperature)}
+                                        <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
+                                            <div className="relative group/select">
+                                                <div className="absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                    <div className={`w-2 h-2 rounded-full ${
+                                                        lead.temperature === 'HOT' ? 'bg-red-500' :
+                                                        lead.temperature === 'WARM' ? 'bg-yellow-500' :
+                                                        lead.temperature === 'COLD' ? 'bg-blue-400' :
+                                                        'bg-gray-200'
+                                                    }`} />
+                                                </div>
+                                                <select
+                                                    value={lead.temperature || 'NONE'}
+                                                    onChange={(e) => handleUpdateLeadField(lead.id, 'temperature', e.target.value)}
+                                                    className="appearance-none w-full bg-transparent pl-4 pr-6 py-1 border-b border-transparent hover:border-gray-300 focus:border-black focus:outline-none cursor-pointer transition-all text-gray-700 text-xs"
+                                                >
+                                                    <option value="NONE">SIN TEMP.</option>
+                                                    <option value="COLD">FRIO</option>
+                                                    <option value="WARM">TIBIO</option>
+                                                    <option value="HOT">CALIENTE</option>
+                                                </select>
+                                                <ChevronDown size={12} className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 group-hover/select:text-gray-600 pointer-events-none" />
                                             </div>
                                         </td>
                                         <td className="px-4 py-4 text-gray-500">
@@ -379,13 +423,22 @@ const Leads = () => {
                                         <td className="px-4 py-4 text-gray-500 max-w-[150px] truncate" title={lead.email}>
                                             {lead.email}
                                         </td>
-                                        <td className="px-4 py-4 text-right print:hidden">
+                                        <td className="px-4 py-4 text-right print:hidden whitespace-nowrap">
                                             <button 
-                                                onClick={(e) => handleDeleteLead(lead.id, e)}
-                                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setSelectedLeadForAction({ 
+                                                        id: lead.id, 
+                                                        name: `${lead.firstName} ${lead.lastName}`,
+                                                        advisorId: lead.advisorId || undefined
+                                                    });
+                                                }}
+                                                className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors mr-1"
+                                                title="Registrar Acción"
                                             >
-                                                <Trash2 size={16} />
+                                                <MessageSquarePlus size={16} />
                                             </button>
+
                                         </td>
                                     </tr>
                                 ))}
@@ -406,6 +459,18 @@ const Leads = () => {
                 <LeadForm
                     onSave={handleSaveLead}
                     onCancel={() => setShowNewLeadModal(false)}
+                />
+            )}
+
+            {selectedLeadForAction && (
+                <QuickInteractionModal
+                    leadId={selectedLeadForAction.id}
+                    leadName={selectedLeadForAction.name}
+                    advisorId={selectedLeadForAction.advisorId}
+                    onClose={() => setSelectedLeadForAction(null)}
+                    onSave={() => {
+                        // interaction added
+                    }}
                 />
             )}
 

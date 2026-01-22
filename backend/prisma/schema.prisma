@@ -1,10 +1,10 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "postgresql"
-  // url removed for Prisma 7 config
 }
 
 enum Role {
@@ -13,9 +13,10 @@ enum Role {
 }
 
 enum LeadTemperature {
-  HOT
-  WARM
+  NONE
   COLD
+  WARM
+  HOT
 }
 
 enum LeadStage {
@@ -26,6 +27,7 @@ enum LeadStage {
   PRESENTATION
   VISIT
   NEGOTIATION
+  OTHER_REQUIREMENT
   CLOSED_WON
   DISCARDED
 }
@@ -46,6 +48,7 @@ model User {
   name      String
   role      Role     @default(ADVISOR)
   active    Boolean  @default(true)
+  phone     String?
   createdAt DateTime @default(now())
 
   leads        Lead[]
@@ -58,55 +61,34 @@ model Lead {
   lastName     String
   email        String?
   phone        String
-  temperature  LeadTemperature @default(WARM)
+  source       String          @default("MANUAL")
+  temperature  LeadTemperature?
   stage        LeadStage       @default(NEW)
-  source       String?
-  budget       Decimal?
-  preferredZone String?
-  interest     String?         // Description of interest
-
-  nextAction     String?
-  nextActionDate DateTime?
-  
   advisorId    String?
-  advisor      User?    @relation(fields: [advisorId], references: [id])
+  advisor      User?           @relation(fields: [advisorId], references: [id])
+  nextAction   String?
+  nextActionDate DateTime?
+  budget       String?
+  city         String?
+  preferredZone String?
+  timing       String?
+  country      String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 
   interactions Interaction[]
   interests    Interest[]
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
 }
 
 model Interaction {
   id        String          @id @default(uuid())
+  leadId    String
+  lead      Lead            @relation(fields: [leadId], references: [id], onDelete: Cascade)
   type      InteractionType
   content   String
-  notes     String?
   date      DateTime        @default(now())
-  
-  leadId    String
-  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  
   advisorId String?
-  advisor   User?    @relation(fields: [advisorId], references: [id])
-}
-
-model PropertyUnit {
-  id         String   @id @default(uuid())
-  name       String
-  type       String
-  floor      Int?
-  area       Decimal?
-  bedrooms   String?
-  bathrooms  Int?
-  price      Decimal
-  currency   String   @default("USD")
-  status     String   @default("AVAILABLE")
-  propertyId String
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  advisor   User?           @relation(fields: [advisorId], references: [id])
 }
 
 model Interest {
@@ -169,4 +151,24 @@ model Property {
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model PropertyUnit {
+  id          String   @id @default(uuid())
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  name        String
+  type        String   @default("APARTMENT")
+  price       Decimal
+  currency    String   @default("USD")
+  status      String   @default("AVAILABLE")
+
+  floor       String?
+  area        Decimal?
+  bedrooms    String?
+  bathrooms   Int?
+  features    String[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -19,6 +19,7 @@ const COLUMNS: { id: PipelineStage; label: string; color: string }[] = [
     { id: 'PRESENTATION', label: 'Presentación', color: 'cyan' },
     { id: 'VISIT', label: 'Visita', color: 'pink' },
     { id: 'NEGOTIATION', label: 'Negociación', color: 'orange' },
+    { id: 'OTHER_REQUIREMENT', label: 'Otro Requerimiento', color: 'violet' },
     { id: 'CLOSED_WON', label: 'Cerrado Ganado', color: 'green' },
     { id: 'DISCARDED', label: 'Descartado', color: 'gray' }
 ];

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -8,10 +8,23 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    // Note: Password hashing should be done before calling this or inside here.
-    return this.prisma.user.create({
-      data: createUserDto as any,
-    });
+    // Sanitize input
+    const { email, name, password, role, active, phone } = createUserDto;
+    
+    try {
+        return await this.prisma.user.create({
+          data: {
+              email,
+              name,
+              password: password || '123456', 
+              role, 
+              active,
+              phone
+          } as any,
+        });
+    } catch (e) {
+        throw new InternalServerErrorException(e.message);
+    }
   }
 
   findAll() {
@@ -26,11 +39,27 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return this.prisma.user.update({
-      where: { id },
-      data: updateUserDto as any,
-    });
+  async update(id: string, updateUserDto: UpdateUserDto) {
+      const { email, name, password, role, active, phone } = updateUserDto;
+      const data: any = { };
+      if (email) data.email = email;
+      if (name) data.name = name;
+      if (role) data.role = role;
+      if (active !== undefined) data.active = active;
+      if (password) data.password = password;
+      if (phone) data.phone = phone;
+
+    console.log('Updating user', id, data);
+
+    try {
+        return await this.prisma.user.update({
+          where: { id },
+          data,
+        });
+    } catch (e) {
+        console.error('Update error:', e);
+        throw new InternalServerErrorException('Error updating user: ' + e.message);
+    }
   }
 
   remove(id: string) {

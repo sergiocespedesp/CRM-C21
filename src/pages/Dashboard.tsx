@@ -235,6 +235,7 @@ const Dashboard: React.FC = () => {
       case 'HOT': return 'text-red-600 bg-red-50 border-red-100';
       case 'WARM': return 'text-orange-600 bg-orange-50 border-orange-100';
       case 'COLD': return 'text-blue-600 bg-blue-50 border-blue-100';
+      case 'NONE': return 'text-gray-400 bg-gray-50 border-gray-100';
       default: return 'text-gray-600 bg-gray-50 border-gray-100';
     }
   };
@@ -362,7 +363,7 @@ const Dashboard: React.FC = () => {
                             </div>
                           </div>
                           <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold border ${getTemperatureColor(lead.temperature)} shadow-sm`}>
-                            {lead.temperature === 'HOT' ? 'CALIENTE' : lead.temperature === 'WARM' ? 'TIBIO' : 'FRÍO'}
+                            {lead.temperature === 'HOT' ? 'CALIENTE' : lead.temperature === 'WARM' ? 'TIBIO' : lead.temperature === 'COLD' ? 'FRÍO' : 'SIN TEMP.'}
                           </span>
                         </div>
                         <div className="flex items-center justify-between mt-4 border-t border-gray-50 pt-3">

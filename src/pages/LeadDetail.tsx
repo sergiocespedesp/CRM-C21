@@ -19,7 +19,8 @@ import {
     ExternalLink
 } from 'lucide-react';
 import { useLead, useUpdateLead, useAddInterest } from '../hooks/useLeads';
-import { useProperties, useUnits } from '../hooks/useProperties';
+import { useProperties, useUnits } from '../hooks/useProperties';
+
 import { useAdvisors } from '../hooks/useAdvisors';
 import { useAddInteraction, useCreateVisitInteraction } from '../hooks/useInteractions';
 import type { Lead, Interaction, Property, Advisor, Interest, PipelineStage, LeadTemperature, InteractionType, VisitChecklist } from '../types';
@@ -72,6 +73,12 @@ const LeadDetail: React.FC = () => {
         if (!lead || !id) return;
         try {
             const { interactions, advisor, interests, id: _, createdAt, updatedAt, ...cleanData } = editForm;
+            
+            // Convert empty string advisorId to null
+            if (cleanData.advisorId === "") {
+                (cleanData as any).advisorId = null;
+            }
+            
             await updateLead.mutateAsync({ id, data: cleanData });
             toast.success('Lead actualizado exitosamente');
             setIsEditing(false);
@@ -87,10 +94,8 @@ const LeadDetail: React.FC = () => {
             const result = await addInteraction.mutateAsync({
                 leadId: lead.id,
                 type: newInteraction.type,
-                // origin: 'MANUAL',
                 content: newInteraction.content,
-                advisorId: lead.advisorId,
-                notes: newInteraction.notes
+                advisorId: lead.advisorId || undefined
             });
             toast.success('Interacción agregada exitosamente');
             setNewInteraction({ type: 'NOTE', content: '', notes: '' });
@@ -143,6 +148,7 @@ const LeadDetail: React.FC = () => {
             case 'HOT': return 'text-red-600 bg-red-50';
             case 'WARM': return 'text-orange-600 bg-orange-50';
             case 'COLD': return 'text-blue-600 bg-blue-50';
+            case 'NONE': return 'text-gray-400 bg-gray-50';
             default: return 'text-gray-600 bg-gray-50';
         }
     };
@@ -156,6 +162,7 @@ const LeadDetail: React.FC = () => {
             PRESENTATION: 'Presentación',
             VISIT: 'Visita',
             NEGOTIATION: 'Negociación',
+            OTHER_REQUIREMENT: 'Otro Requerimiento',
             CLOSED_WON: 'Cerrado Ganado',
             DISCARDED: 'Descartado'
         };
@@ -271,7 +278,8 @@ const LeadDetail: React.FC = () => {
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     {isEditing ? (
-                                        <select value={editForm.temperature || 'WARM'} onChange={(e) => setEditForm({ ...editForm, temperature: e.target.value as LeadTemperature })} className="px-3 py-1 border rounded">
+                                        <select value={editForm.temperature || 'NONE'} onChange={(e) => setEditForm({ ...editForm, temperature: e.target.value as LeadTemperature })} className="px-3 py-1 border rounded">
+                                            <option value="NONE">Sin Temperatura</option>
                                             <option value="COLD">Frío</option>
                                             <option value="WARM">Tibio</option>
                                             <option value="HOT">Caliente</option>
@@ -279,7 +287,8 @@ const LeadDetail: React.FC = () => {
                                     ) : (
                                         <span className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 ${getTemperatureColor(lead.temperature)}`}>
                                             <Thermometer className="w-4 h-4" />
-                                            {lead.temperature === 'HOT' ? 'Caliente' : lead.temperature === 'WARM' ? 'Tibio' : 'Frío'}
+                                            {lead.temperature === 'HOT' ? 'Caliente' : lead.temperature === 'WARM' ? 'Tibio' : lead.temperature === 'COLD' ? 'Frio' : 'Sin Temp.'}
+
                                         </span>
                                     )}
                                 </div>
@@ -314,6 +323,7 @@ const LeadDetail: React.FC = () => {
                                     <User className="w-5 h-5 text-gray-400" />
                                     {isEditing ? (
                                         <select value={editForm.advisorId || ''} onChange={(e) => setEditForm({ ...editForm, advisorId: e.target.value })} className="flex-1 px-3 py-1 border rounded">
+                                            <option value="">Sin Asignar</option>
                                             {advisors.map(adv => (
                                                 <option key={adv.id} value={adv.id}>{adv.name}</option>
                                             ))}
@@ -335,6 +345,7 @@ const LeadDetail: React.FC = () => {
                                         <option value="PRESENTATION">Presentación</option>
                                         <option value="VISIT">Visita</option>
                                         <option value="NEGOTIATION">Negociación</option>
+                                        <option value="OTHER_REQUIREMENT">Otro Requerimiento</option>
                                         <option value="CLOSED_WON">Cerrado Ganado</option>
                                         <option value="DISCARDED">Descartado</option>
                                     </select>
@@ -525,7 +536,8 @@ const LeadDetail: React.FC = () => {
 
                          {/* Next Actions Section */}
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h2 className="text-xl font-bold text-gray-900 mb-4">Pr?ximas Acciones a Realizar</h2>
+                            <h2 className="text-xl font-bold text-gray-900 mb-4">Proximas Acciones a Realizar</h2>
+
                             
                             <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-4">
                                 <div className="grid grid-cols-1 gap-4 mb-4">

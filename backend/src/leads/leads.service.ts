@@ -8,8 +8,13 @@ export class LeadsService {
     constructor(private prisma: PrismaService) { }
 
     create(createLeadDto: CreateLeadDto) {
+        // Remove undefined fields to avoid Prisma errors
+        const cleanData = Object.fromEntries(
+            Object.entries(createLeadDto).filter(([_, v]) => v !== undefined)
+        );
+        console.log('Clean data for Prisma:', cleanData);
         return this.prisma.lead.create({
-            data: createLeadDto as any,
+            data: cleanData as any,
         });
     }
 
@@ -44,10 +49,27 @@ export class LeadsService {
         });
     }
 
-    update(id: string, updateLeadDto: UpdateLeadDto) {
+    async update(id: string, updateLeadDto: UpdateLeadDto) {
+        // Define allowed fields to avoid Prisma errors with unknown fields from frontend
+        const allowedFields = [
+            'firstName', 'lastName', 'email', 'phone', 'source', 
+            'temperature', 'stage', 'advisorId', 'nextAction', 
+            'nextActionDate', 'budget', 'city', 'preferredZone', 
+            'timing', 'country'
+        ];
+
+        const cleanData: any = {};
+        Object.entries(updateLeadDto).forEach(([key, value]) => {
+            if (allowedFields.includes(key) && value !== undefined) {
+                cleanData[key] = value;
+            }
+        });
+
+        console.log(`[LeadsService] Clean update data for lead ${id}:`, JSON.stringify(cleanData, null, 2));
+
         return this.prisma.lead.update({
             where: { id },
-            data: updateLeadDto as any,
+            data: cleanData,
         });
     }
 

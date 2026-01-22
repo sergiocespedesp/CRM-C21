@@ -1,49 +1,86 @@
-
+﻿import api from './api';
 import type { Advisor } from '../types';
-import { mockAdvisors } from './mockData';
-
-const STORAGE_KEY = 'crm_advisors';
-
-const getStoredAdvisors = (): Advisor[] => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(mockAdvisors));
-        return mockAdvisors;
-    }
-    return JSON.parse(stored);
-};
-
-let advisors: Advisor[] = getStoredAdvisors();
 
 export const AdvisorService = {
     getAllAdvisors: async (): Promise<Advisor[]> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        advisors = getStoredAdvisors(); // Refresh from storage
-        return [...advisors];
+        try {
+            const response = await api.get('/users');
+            // Mapping backend User to frontend Advisor interface
+            const users = Array.isArray(response.data) ? response.data : [];
+            return users
+                //.filter((u: any) => u.role === 'ADVISOR') // Optional: Filter by role
+                .map((u: any) => ({
+                    id: u.id,
+                    name: u.name,
+                    email: u.email,
+                    phone: u.phone || '', // Handle missing fields gracefully
+                    active: u.active !== false,
+                    role: u.role,
+                    photo: u.photo || undefined,
+                    office: u.office || undefined
+                }));
+        } catch (error) {
+            console.error('Error fetching advisors:', error);
+            return [];
+        }
     },
 
     getAdvisorById: async (id: string): Promise<Advisor | undefined> => {
-        await new Promise(resolve => setTimeout(resolve, 300));
-        advisors = getStoredAdvisors();
-        return advisors.find(a => a.id === id);
+        try {
+            const response = await api.get(/users/);
+            const u = response.data;
+            return {
+                id: u.id,
+                name: u.name,
+                email: u.email,
+                phone: u.phone || '',
+                active: u.active !== false,
+                role: u.role,
+                photo: u.photo,
+                office: u.office
+            };
+        } catch (error) {
+            console.error('Error fetching advisor:', error);
+            return undefined;
+        }
     },
 
     createAdvisor: async (advisor: Omit<Advisor, 'id'>): Promise<Advisor> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        const newAdvisor = { ...advisor, id: `adv-${Date.now()}` };
-        advisors = [...advisors, newAdvisor];
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(advisors));
-        return newAdvisor;
+        // Default password for new advisors created via admin panel
+        const payload = {
+            ...advisor,
+            password: 'Password123!', 
+        };
+        const response = await api.post('/users', payload);
+        const u = response.data;
+        return {
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            phone: u.phone || advisor.phone,
+            active: u.active,
+            role: u.role,
+            photo: u.photo,
+            office: u.office
+        };
     },
 
     updateAdvisor: async (id: string, updates: Partial<Advisor>): Promise<Advisor> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        const index = advisors.findIndex(a => a.id === id);
-        if (index === -1) throw new Error('Advisor not found');
-
-        const updatedAdvisor = { ...advisors[index], ...updates };
-        advisors = advisors.map(a => a.id === id ? updatedAdvisor : a);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(advisors));
-        return updatedAdvisor;
+        const response = await api.patch(/users/, updates);
+        const u = response.data;
+        return {
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            phone: u.phone || '',
+            active: u.active,
+            role: u.role,
+            photo: u.photo,
+            office: u.office
+        };
+    },
+    
+    deleteAdvisor: async (id: string): Promise<void> => {
+        await api.delete(/users/);
     }
 };

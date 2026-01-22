@@ -10,8 +10,16 @@ export class LeadsController {
     constructor(private readonly leadsService: LeadsService) { }
 
     @Post()
-    create(@Body() createLeadDto: CreateLeadDto) {
-        return this.leadsService.create(createLeadDto);
+    async create(@Body() createLeadDto: CreateLeadDto) {
+        try {
+            console.log('Creating lead with data:', JSON.stringify(createLeadDto, null, 2));
+            const result = await this.leadsService.create(createLeadDto);
+            console.log('Lead created successfully:', result.id);
+            return result;
+        } catch (error) {
+            console.error('Error creating lead:', error);
+            throw error;
+        }
     }
 
     @Get()
@@ -30,8 +38,16 @@ export class LeadsController {
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto) {
-        return this.leadsService.update(id, updateLeadDto);
+    async update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto) {
+        try {
+            console.log(`Updating lead ${id} with data:`, JSON.stringify(updateLeadDto, null, 2));
+            const result = await this.leadsService.update(id, updateLeadDto);
+            console.log('Lead updated successfully');
+            return result;
+        } catch (error) {
+            console.error('Error updating lead:', error);
+            throw error;
+        }
     }
 
     @Delete(':id')

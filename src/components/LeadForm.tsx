@@ -13,6 +13,7 @@ export interface LeadFormData {
     budget?: string;
     preferredZone?: string;
     timing?: string;
+    city: string;
 }
 const LeadForm: React.FC<LeadFormProps> = ({ onSave, onCancel }) => {
     const [formData, setFormData] = useState<LeadFormData>({
@@ -23,7 +24,8 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSave, onCancel }) => {
         source: 'Manual',
         budget: '',
         preferredZone: '',
-        timing: ''
+        timing: '',
+        city: ''
     });
     
     const [loading, setLoading] = useState(false);
@@ -36,6 +38,7 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSave, onCancel }) => {
         if (!formData.email.trim()) newErrors.email = 'Email es requerido';
         else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email inválido';
         if (!formData.phone.trim()) newErrors.phone = 'Teléfono es requerido';
+        if (!formData.city.trim()) newErrors.city = 'Ciudad es requerida';
         
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -48,9 +51,10 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSave, onCancel }) => {
         setLoading(true);
         try {
             await onSave(formData);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving lead:', error);
-            alert('Error al guardar el lead');
+            const message = error.response?.data?.message || error.message || 'Error al guardar el lead';
+            alert(`Error: ${message}`);
         } finally {
             setLoading(false);
         }
@@ -140,13 +144,32 @@ const LeadForm: React.FC<LeadFormProps> = ({ onSave, onCancel }) => {
                             onChange={(e) => setFormData({ ...formData, source: e.target.value })}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                         >
-                            <option value="Manual">Manual</option>
-                            <option value="Facebook Ads">Facebook Ads</option>
-                            <option value="Instagram Ads">Instagram Ads</option>
-                            <option value="WhatsApp">WhatsApp</option>
-                            <option value="Referido">Referido</option>
-                            <option value="Website">Website</option>
+                            <option value="fb">fb</option>
+                            <option value="ig">ig</option>
+                            <option value="Asesor C21">Asesor C21</option>
+                            <option value="Asesor Externo">Asesor Externo</option>
+                            <option value="Bitly">Bitly</option>
+                            <option value="Contacto directo">Contacto directo</option>
+                            <option value="Letrero">Letrero</option>
+                            <option value="Marketplace">Marketplace</option>
+                            <option value="Otro">Otro</option>
+                            <option value="Recuperado">Recuperado</option>
+                            <option value="TikTok">TikTok</option>
+                            <option value="Ultracasas">Ultracasas</option>
                         </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">
+                            Ciudad <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.city}
+                            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                            className={`w-full px-3 py-2 border rounded-lg ${errors.city ? 'border-red-500' : 'border-gray-300'}`}
+                            placeholder="Ej: La Paz, Santa Cruz, El Alto"
+                        />
+                        {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
                     </div>
                     {/* Campos de Calificación */}
                     <div className="border-t pt-4 mt-4">

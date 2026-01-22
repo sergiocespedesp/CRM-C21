@@ -72,7 +72,7 @@ const Analytics = () => {
     };
 
     const getTemperatureDistribution = () => {
-        const temperatures: LeadTemperature[] = ['HOT', 'WARM', 'COLD'];
+        const temperatures: LeadTemperature[] = ['NONE', 'COLD', 'WARM', 'HOT'];
         return temperatures.map(temp => {
             const count = leads.filter(l => l.temperature === temp).length;
             return {
@@ -112,7 +112,7 @@ const Analytics = () => {
         );
     }
 
-    const getTempLabel = (temp: string) => ({ 'HOT': 'Caliente', 'WARM': 'Tibio', 'COLD': 'Frío' }[temp] || temp);
+    const getTempLabel = (temp: string) => ({ 'NONE': 'Sin Temp.', 'COLD': 'Frío', 'WARM': 'Tibio', 'HOT': 'Caliente' }[temp] || temp);
 
     return (
         <div className="p-6 space-y-8 animate-in fade-in duration-700">
@@ -217,7 +217,7 @@ const Analytics = () => {
                     <div className="space-y-6">
                          {tempData.map((data, index) => (
                             <div key={index} className="flex items-center gap-4">
-                                <div className={`w-3 h-3 rounded-full ${data.temperature === 'HOT' ? 'bg-red-500' : data.temperature === 'WARM' ? 'bg-yellow-500' : 'bg-blue-400'}`} />
+                                <div className={`w-3 h-3 rounded-full ${data.temperature === 'HOT' ? 'bg-red-500' : data.temperature === 'WARM' ? 'bg-yellow-500' : data.temperature === 'COLD' ? 'bg-blue-400' : 'bg-gray-200'}`} />
                                 <div className="flex-1">
                                     <div className="flex justify-between text-sm font-medium mb-1">
                                          <span className="text-gray-700">{getTempLabel(data.temperature)}</span>
@@ -225,7 +225,7 @@ const Analytics = () => {
                                     </div>
                                     <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
                                         <div 
-                                            className={`h-full ${data.temperature === 'HOT' ? 'bg-red-500' : data.temperature === 'WARM' ? 'bg-yellow-500' : 'bg-blue-400'} opacity-80`}
+                                            className={`h-full ${data.temperature === 'HOT' ? 'bg-red-500' : data.temperature === 'WARM' ? 'bg-yellow-500' : data.temperature === 'COLD' ? 'bg-blue-400' : 'bg-gray-200'} opacity-80`}
                                             style={{ width: `${data.percentage}%` }}
                                         />
                                     </div>

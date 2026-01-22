@@ -27,6 +27,7 @@ export const PipelineOverview: React.FC = () => {
     VISIT: { label: 'Visita', color: 'bg-pink-500' },
 
     NEGOTIATION: { label: 'Negociación', color: 'bg-orange-500' },
+    OTHER_REQUIREMENT: { label: 'Otro Requerimiento', color: 'bg-violet-500' },
     CLOSED_WON: { label: 'Ganado', color: 'bg-green-500' },
 
     DISCARDED: { label: 'Descartado', color: 'bg-gray-300' }

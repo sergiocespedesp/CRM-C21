@@ -18,13 +18,17 @@ const getStageLabel = (stage: string) => {
     const map: Record<string, string> = {
         'NEW': 'NUEVO', 'INFO_SENT': 'INFO ENVIADA', 'CONTACTED': 'CONTACTADO',
         'QUALIFIED': 'CALIFICADO', 'PRESENTATION': 'PRESENTACIÓN', 'VISIT': 'VISITA',
-        'NEGOTIATION': 'NEGOCIACIÓN', 'CLOSED_WON': 'GANADO', 'DISCARDED': 'DESCARTADO'
+
+        'NEGOTIATION': 'NEGOCIACION', 'OTHER_REQUIREMENT': 'OTRO REQUERIMIENTO',
+
+        'CLOSED_WON': 'GANADO', 'DISCARDED': 'DESCARTADO'
+
     };
     return map[stage] || stage;
 };
 
 const getTempLabel = (temp: string) => {
-    const map: Record<string, string> = { 'HOT': 'CALIENTE', 'WARM': 'TIBIO', 'COLD': 'FRÍO' };
+    const map: Record<string, string> = { 'NONE': 'SIN TEMP.', 'COLD': 'FRIO', 'WARM': 'TIBIO', 'HOT': 'CALIENTE' };
     return map[temp] || temp;
 };
 
@@ -67,7 +71,7 @@ const Leads = () => {
         setSearchParams(params, { replace: true });
     }, [searchTerm, selectedAdvisor, selectedStage, selectedProperty, currentPage, setSearchParams]);
 
-    const STAGES: PipelineStage[] = ['NEW', 'INFO_SENT', 'CONTACTED', 'QUALIFIED', 'PRESENTATION', 'VISIT', 'NEGOTIATION', 'CLOSED_WON', 'DISCARDED'];
+    const STAGES: PipelineStage[] = ['NEW', 'INFO_SENT', 'CONTACTED', 'QUALIFIED', 'PRESENTATION', 'VISIT', 'NEGOTIATION', 'OTHER_REQUIREMENT', 'CLOSED_WON', 'DISCARDED'];
 
     // Load Data
     const loadData = useCallback(async () => {
@@ -211,7 +215,7 @@ const Leads = () => {
                 city: 'La Paz',
                 country: 'Bolivia',
                 stage: 'NEW',
-                temperature: 'WARM',
+                temperature: 'NONE',
                 advisorId: '', 
                 budget: leadData.budget as any,
                 preferredZone: leadData.preferredZone,
@@ -357,7 +361,9 @@ const Leads = () => {
                                                 <div className={`w-2 h-2 rounded-full ${
                                                     lead.temperature === 'HOT' ? 'bg-red-500' :
                                                     lead.temperature === 'WARM' ? 'bg-yellow-500' :
-                                                    'bg-blue-400'
+                                                    lead.temperature === 'COLD' ? 'bg-blue-400' :
+                                                    lead.temperature === 'NONE' ? 'bg-gray-200' :
+                                                    'bg-gray-300'
                                                 }`} />
                                                 {getTempLabel(lead.temperature)}
                                             </div>

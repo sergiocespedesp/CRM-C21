@@ -39,9 +39,9 @@ const Advisors = () => {
                 await createAdvisor.mutateAsync(currentAdvisor);
             }
             setIsModalOpen(false);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving advisor:', error);
-            alert('Error al guardar asesor');
+            const msg = error.response?.data?.message || 'Error al guardar'; alert('Error: ' + msg);
         }
     };
 

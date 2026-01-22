@@ -1,99 +1,73 @@
+import api from './api';
 import type { Property, PropertyUnit } from '../types';
-import { mockProperties, mockUnits } from './mockData';
-
-// Helper to load from LocalStorage
-const loadFromStorage = <T>(key: string, defaultData: T[]): T[] => {
-    const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : defaultData;
-};
-
-// Helper to save to LocalStorage
-const saveToStorage = <T>(key: string, data: T[]) => {
-    localStorage.setItem(key, JSON.stringify(data));
-};
-
-// In-memory storage
-let properties: Property[] = loadFromStorage('crm_properties', mockProperties);
-let units: PropertyUnit[] = loadFromStorage('crm_units', mockUnits);
 
 export const PropertyService = {
     getAllProperties: async (): Promise<Property[]> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return [...properties];
+        const response = await api.get<Property[]>('/properties');
+        // Ensure proper typing for numeric fields that might come as strings from DB
+        return response.data.map(transformPropertyDates);
     },
 
     getPropertyById: async (id: string): Promise<Property | undefined> => {
-        await new Promise(resolve => setTimeout(resolve, 300));
-        return properties.find(p => p.id === id);
+        const response = await api.get<Property>(`/properties/${id}`);
+        return transformPropertyDates(response.data);
     },
 
     createProperty: async (property: Omit<Property, 'id'>): Promise<Property> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        const newProperty = { ...property, id: `prop-${Date.now()}` };
-        properties.push(newProperty);
-        saveToStorage('crm_properties', properties);
-        return newProperty;
+        const response = await api.post<Property>('/properties', property);
+        return transformPropertyDates(response.data);
     },
 
     updateProperty: async (id: string, updates: Partial<Property>): Promise<Property> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        const index = properties.findIndex(p => p.id === id);
-        if (index === -1) throw new Error('Property not found');
-        properties[index] = { ...properties[index], ...updates };
-        saveToStorage('crm_properties', properties);
-        return properties[index];
+        const response = await api.patch<Property>(`/properties/${id}`, updates);
+        return transformPropertyDates(response.data);
     },
 
     deleteProperty: async (id: string): Promise<void> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        properties = properties.filter(p => p.id !== id);
-        saveToStorage('crm_properties', properties);
-
-        // Cleanup associated units
-        const relatedUnits = units.filter(u => u.propertyId === id);
-        if (relatedUnits.length > 0) {
-            units = units.filter(u => u.propertyId !== id);
-            saveToStorage('crm_units', units);
-        }
-    },
-
-    uploadImage: async (_propertyId: string, _file: File): Promise<string> => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        // Mock upload: return a random architectural image from Unsplash
-        return `https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1000&random=${Date.now()}`;
+        await api.delete(`/properties/${id}`);
     },
 
     // Units Logic
-    getUnitsByPropertyId: async (propertyId: string): Promise<PropertyUnit[]> => {
-        await new Promise(resolve => setTimeout(resolve, 300));
-        return units.filter(u => u.propertyId === propertyId);
-    },
-
     getAllUnits: async (): Promise<PropertyUnit[]> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return [...units];
+        const response = await api.get<PropertyUnit[]>('/units');
+        return response.data.map(transformUnitNumerics);
     },
 
     createUnit: async (unit: Omit<PropertyUnit, 'id'>): Promise<PropertyUnit> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        const newUnit = { ...unit, id: `unit-${Date.now()}` };
-        units.push(newUnit);
-        saveToStorage('crm_units', units);
-        return newUnit;
+        const response = await api.post<PropertyUnit>('/units', unit);
+        return transformUnitNumerics(response.data);
     },
 
     updateUnit: async (id: string, updates: Partial<PropertyUnit>): Promise<PropertyUnit> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        const index = units.findIndex(u => u.id === id);
-        if (index === -1) throw new Error('Unit not found');
-        units[index] = { ...units[index], ...updates };
-        saveToStorage('crm_units', units);
-        return units[index];
+        const response = await api.patch<PropertyUnit>(`/units/${id}`, updates);
+        return transformUnitNumerics(response.data);
     },
 
     deleteUnit: async (id: string): Promise<void> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        units = units.filter(u => u.id !== id);
-        saveToStorage('crm_units', units);
+        await api.delete(`/units/${id}`);
     }
 };
+
+// Helpers to ensure data consistency from API/DB
+const transformPropertyDates = (p: Property): Property => ({
+    ...p,
+    createdAt: new Date(p.createdAt),
+    updatedAt: new Date(p.updatedAt),
+    // Ensure numeric fields are numbers
+    price: Number(p.price),
+    landArea: p.landArea ? Number(p.landArea) : undefined,
+    builtArea: p.builtArea ? Number(p.builtArea) : undefined,
+    bathrooms: p.bathrooms ? Number(p.bathrooms) : undefined,
+    garages: p.garages ? Number(p.garages) : undefined,
+    pricePerSqmFrom: p.pricePerSqmFrom ? Number(p.pricePerSqmFrom) : undefined,
+    pricePerSqmTo: p.pricePerSqmTo ? Number(p.pricePerSqmTo) : undefined,
+    exchangeRate: p.exchangeRate ? Number(p.exchangeRate) : undefined,
+});
+
+const transformUnitNumerics = (u: PropertyUnit): PropertyUnit => ({
+    ...u,
+    floor: u.floor ? Number(u.floor) : undefined,
+    area: Number(u.area),
+    bathrooms: u.bathrooms ? Number(u.bathrooms) : undefined,
+    price: Number(u.price),
+});

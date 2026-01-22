@@ -1,12 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class PropertiesService {
+    private readonly logger = new Logger(PropertiesService.name);
+
     constructor(private prisma: PrismaService) { }
 
-    create(data: any) {
-        return this.prisma.property.create({ data });
+    async create(data: any) {
+        try {
+            this.logger.log('Creating property with data:', JSON.stringify(data));
+            return await this.prisma.property.create({ data });
+        } catch (error) {
+            this.logger.error('Error creating property:', error);
+            throw error;
+        }
     }
 
     async createBulk(properties: any[]) {

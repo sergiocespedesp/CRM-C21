@@ -6,8 +6,8 @@ import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { LeadsModule } from './leads/leads.module';
-import { InteractionsModule } from './interactions/interactions.module';
-import { UnitsModule } from './units/units.module';
+import { InteractionsModule } from './interactions/interactions.module';
+import { UnitsModule } from './units/units.module';
 import { PropertiesModule } from './properties/properties.module';
 
 @Module({
@@ -17,7 +17,9 @@ import { PropertiesModule } from './properties/properties.module';
     PrismaModule, 
     AuthModule, 
     LeadsModule, 
-    InteractionsModule
+    InteractionsModule,
+    PropertiesModule,
+    UnitsModule
   ],
   controllers: [AppController],
   providers: [AppService],

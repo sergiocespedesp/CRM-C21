@@ -92,8 +92,6 @@ model Interaction {
   advisor   User?    @relation(fields: [advisorId], references: [id])
 }
 
-
-
 model PropertyUnit {
   id         String   @id @default(uuid())
   name       String
@@ -122,17 +120,53 @@ model Interest {
 }
 
 model Property {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  price       Decimal 
-  location    String?
-  status      String   @default("AVAILABLE")
-  features    Json?    // Flexible feature list
-  images      String[]
+  id              String   @id @default(uuid())
+  name            String
+  type            String   @default("PROJECT")
+  transaction     String   @default("SALE")
+  currency        String   @default("USD")
+  price           Decimal?
+  status          String   @default("AVAILABLE")
+
+  // Location
+  zone            String?
+  address         String?
+  mapUrl          String?
+
+  // Descriptions
+  description     String?
+  longDescription String?
+
+  // Areas & Specs
+  landArea        Decimal?
+  builtArea       Decimal?
+  bedrooms        String?
+  bathrooms       Int?
+  garages         Int?
+
+  // Project Specifics
+  deliveryDate    DateTime?
+  availability    String?
   
-  interests   Interest[]
-  units       PropertyUnit[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  // Financials
+  pricePerSqmFrom Decimal?
+  pricePerSqmTo   Decimal?
+  exchangeRate    Decimal? @default(6.96)
+
+  // Lists
+  paymentMethods  String[]
+  equipment       String[]
+  amenities       String[]
+  images          String[]
+
+  // Contact
+  advisorId       String?
+  phone           String?
+  
+  // Relations
+  interests       Interest[]
+  units           PropertyUnit[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
